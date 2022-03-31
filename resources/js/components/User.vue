@@ -434,12 +434,16 @@ export default {
     newModal() {
       this.editMode = false;
       this.form.reset();
-      $("#formModal").modal("show");
+      this.removeErrors();
+      let modal = $("#formModal");
+      modal.modal("show");
     },
     editModal(user) {
       this.editMode = true;
       this.form.reset();
-      $("#formModal").modal("show");
+      this.removeErrors();
+      let modal = $("#formModal");
+      modal.modal("show");
       this.form.fill(user);
     },
     createUser() {
@@ -484,6 +488,9 @@ export default {
             title: "Some error occured! Please try again",
           });
         });
+    },
+    removeErrors() {
+      this.form.errors.clear();
     },
   },
   created() {

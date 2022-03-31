@@ -8624,12 +8624,16 @@ __webpack_require__.r(__webpack_exports__);
     newModal: function newModal() {
       this.editMode = false;
       this.form.reset();
-      $("#formModal").modal("show");
+      this.removeErrors();
+      var modal = $("#formModal");
+      modal.modal("show");
     },
     editModal: function editModal(user) {
       this.editMode = true;
       this.form.reset();
-      $("#formModal").modal("show");
+      this.removeErrors();
+      var modal = $("#formModal");
+      modal.modal("show");
       this.form.fill(user);
     },
     createUser: function createUser() {
@@ -8670,6 +8674,9 @@ __webpack_require__.r(__webpack_exports__);
           title: "Some error occured! Please try again"
         });
       });
+    },
+    removeErrors: function removeErrors() {
+      this.form.errors.clear();
     }
   },
   created: function created() {
