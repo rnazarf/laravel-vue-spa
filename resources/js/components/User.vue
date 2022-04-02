@@ -205,7 +205,10 @@
                     <a class="dropdown-item" href="#" @click="editModal(user)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
-                    <a class="dropdown-item text-danger rounded-bottom" href="#"
+                    <a
+                      class="dropdown-item text-danger rounded-bottom"
+                      href="#"
+                      @click="deleteAction(user.id)"
                       ><span class="fas fa-trash-alt me-2"></span>Remove</a
                     >
                   </div>
@@ -233,7 +236,7 @@
           justify-content-between
         "
       >
-        <pagination :data="users" @pagination-change-page="getResults">
+        <pagination :data="users" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
           </template>
@@ -267,7 +270,7 @@
                 aria-label="Close"
               ></button>
             </div>
-            <form @submit.prevent="editMode ? updateUser() : createUser()">
+            <form @submit.prevent="editMode ? updateAction() : createAction()">
               <div class="modal-body">
                 <!-- Form -->
                 <div class="form-group mb-1">
@@ -397,56 +400,38 @@ export default {
   methods: {
     search() {
       this.$Progress.start();
-      this.getResults(1);
+      this.getData(1);
       this.$Progress.finish();
     },
-    loadUsers() {
-      this.$Progress.start();
-      axios.get("api/v1/user").then(({ data }) => {
-        this.users = data.data;
-        this.currentPage = data.data.current_page;
-        this.perPage = data.data.per_page;
-        this.from = data.data.from;
-        this.to = data.data.to;
-        this.total = data.data.total;
-      });
-      this.$Progress.finish();
-    },
-    getResults(page = 1) {
+    getData(page = this.currentPage, reload = false) {
       this.$Progress.start();
       axios
         .get("api/v1/user", {
           params: {
-            page: page,
+            page: !reload ? page : 1,
             search: this.searchData,
           },
         })
         .then(({ data }) => {
           this.users = data.data;
-          this.currentPage = data.data.current_page;
-          this.perPage = data.data.per_page;
-          this.from = data.data.from;
-          this.to = data.data.to;
-          this.total = data.data.total;
+          this.pagination(data);
         });
       this.$Progress.finish();
     },
     newModal() {
       this.editMode = false;
-      this.form.reset();
-      this.removeErrors();
+      this.clearForm();
       let modal = $("#formModal");
       modal.modal("show");
     },
     editModal(user) {
       this.editMode = true;
-      this.form.reset();
-      this.removeErrors();
+      this.clearForm();
       let modal = $("#formModal");
       modal.modal("show");
       this.form.fill(user);
     },
-    createUser() {
+    createAction() {
       this.$Progress.start();
       this.form
         .post("api/v1/user")
@@ -458,7 +443,7 @@ export default {
             title: response.data.message,
           });
 
-          this.loadUsers();
+          this.getData(1, true);
         })
         .catch(() => {
           Toast.fire({
@@ -468,7 +453,7 @@ export default {
         });
       this.$Progress.finish();
     },
-    updateUser() {
+    updateAction() {
       this.form
         .put("api/v1/user/" + this.form.id)
         .then((response) => {
@@ -480,7 +465,7 @@ export default {
             title: response.data.message,
           });
 
-          this.loadUsers();
+          this.getData();
         })
         .catch(() => {
           Toast.fire({
@@ -489,14 +474,44 @@ export default {
           });
         });
     },
-    removeErrors() {
+    deleteAction(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.value) {
+          this.form
+            .delete("api/v1/user/" + id)
+            .then(() => {
+              Swal.fire("Deleted!", "Data has been deleted.", "success");
+              this.getData();
+            })
+            .catch((data) => {
+              Swal.fire("Failed!", data.message, "warning");
+            });
+        }
+      });
+    },
+    pagination(meta) {
+      this.currentPage = meta.data.current_page;
+      this.perPage = meta.data.per_page;
+      this.from = meta.data.from;
+      this.to = meta.data.to;
+      this.total = meta.data.total;
+    },
+    clearForm() {
+      this.form.reset();
       this.form.errors.clear();
     },
   },
   created() {
     this.$Progress.start();
     setTimeout(() => {
-      this.loadUsers();
+      this.getData();
       this.$Progress.finish();
     }, 1000);
   },

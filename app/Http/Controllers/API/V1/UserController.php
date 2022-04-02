@@ -112,6 +112,9 @@ class UserController extends BaseController
      */
     public function destroy($id)
     {
-        //
+        $user = $this->user->findOrFail($id);
+        $user->delete();
+
+        return $this->sendResponse([$user], 'User has been deleted');
     }
 }

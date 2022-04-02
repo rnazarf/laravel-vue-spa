@@ -8556,6 +8556,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -8582,62 +8585,43 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     search: function search() {
       this.$Progress.start();
-      this.getResults(1);
+      this.getData(1);
       this.$Progress.finish();
     },
-    loadUsers: function loadUsers() {
+    getData: function getData() {
       var _this = this;
 
-      this.$Progress.start();
-      axios.get("api/v1/user").then(function (_ref) {
-        var data = _ref.data;
-        _this.users = data.data;
-        _this.currentPage = data.data.current_page;
-        _this.perPage = data.data.per_page;
-        _this.from = data.data.from;
-        _this.to = data.data.to;
-        _this.total = data.data.total;
-      });
-      this.$Progress.finish();
-    },
-    getResults: function getResults() {
-      var _this2 = this;
-
-      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.currentPage;
+      var reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       this.$Progress.start();
       axios.get("api/v1/user", {
         params: {
-          page: page,
+          page: !reload ? page : 1,
           search: this.searchData
         }
-      }).then(function (_ref2) {
-        var data = _ref2.data;
-        _this2.users = data.data;
-        _this2.currentPage = data.data.current_page;
-        _this2.perPage = data.data.per_page;
-        _this2.from = data.data.from;
-        _this2.to = data.data.to;
-        _this2.total = data.data.total;
+      }).then(function (_ref) {
+        var data = _ref.data;
+        _this.users = data.data;
+
+        _this.pagination(data);
       });
       this.$Progress.finish();
     },
     newModal: function newModal() {
       this.editMode = false;
-      this.form.reset();
-      this.removeErrors();
+      this.clearForm();
       var modal = $("#formModal");
       modal.modal("show");
     },
     editModal: function editModal(user) {
       this.editMode = true;
-      this.form.reset();
-      this.removeErrors();
+      this.clearForm();
       var modal = $("#formModal");
       modal.modal("show");
       this.form.fill(user);
     },
-    createUser: function createUser() {
-      var _this3 = this;
+    createAction: function createAction() {
+      var _this2 = this;
 
       this.$Progress.start();
       this.form.post("api/v1/user").then(function (response) {
@@ -8647,7 +8631,7 @@ __webpack_require__.r(__webpack_exports__);
           title: response.data.message
         });
 
-        _this3.loadUsers();
+        _this2.getData(1, true);
       })["catch"](function () {
         Toast.fire({
           icon: "error",
@@ -8656,8 +8640,8 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.$Progress.finish();
     },
-    updateUser: function updateUser() {
-      var _this4 = this;
+    updateAction: function updateAction() {
+      var _this3 = this;
 
       this.form.put("api/v1/user/" + this.form.id).then(function (response) {
         // success
@@ -8667,7 +8651,7 @@ __webpack_require__.r(__webpack_exports__);
           title: response.data.message
         });
 
-        _this4.loadUsers();
+        _this3.getData();
       })["catch"](function () {
         Toast.fire({
           icon: "error",
@@ -8675,7 +8659,37 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
-    removeErrors: function removeErrors() {
+    deleteAction: function deleteAction(id) {
+      var _this4 = this;
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+      }).then(function (result) {
+        if (result.value) {
+          _this4.form["delete"]("api/v1/user/" + id).then(function () {
+            Swal.fire("Deleted!", "Data has been deleted.", "success");
+
+            _this4.getData();
+          })["catch"](function (data) {
+            Swal.fire("Failed!", data.message, "warning");
+          });
+        }
+      });
+    },
+    pagination: function pagination(meta) {
+      this.currentPage = meta.data.current_page;
+      this.perPage = meta.data.per_page;
+      this.from = meta.data.from;
+      this.to = meta.data.to;
+      this.total = meta.data.total;
+    },
+    clearForm: function clearForm() {
+      this.form.reset();
       this.form.errors.clear();
     }
   },
@@ -8684,7 +8698,7 @@ __webpack_require__.r(__webpack_exports__);
 
     this.$Progress.start();
     setTimeout(function () {
-      _this5.loadUsers();
+      _this5.getData();
 
       _this5.$Progress.finish();
     }, 1000);
@@ -63065,13 +63079,31 @@ var render = function () {
                               ]
                             ),
                             _vm._v(" "),
-                            _vm._m(4, true),
+                            _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "dropdown-item text-danger rounded-bottom",
+                                attrs: { href: "#" },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.deleteAction(user.id)
+                                  },
+                                },
+                              },
+                              [
+                                _c("span", {
+                                  staticClass: "fas fa-trash-alt me-2",
+                                }),
+                                _vm._v("Remove"),
+                              ]
+                            ),
                           ]),
                         ]),
                       ]),
                     ])
                   })
-                : [_vm._m(5)],
+                : [_vm._m(4)],
             ],
             2
           ),
@@ -63086,7 +63118,7 @@ var render = function () {
           [
             _c("pagination", {
               attrs: { data: _vm.users },
-              on: { "pagination-change-page": _vm.getResults },
+              on: { "pagination-change-page": _vm.getData },
               scopedSlots: _vm._u([
                 {
                   key: "prev-nav",
@@ -63139,7 +63171,7 @@ var render = function () {
               },
               [
                 _c("div", { staticClass: "modal-content" }, [
-                  _vm._m(6),
+                  _vm._m(5),
                   _vm._v(" "),
                   _c(
                     "form",
@@ -63147,7 +63179,7 @@ var render = function () {
                       on: {
                         submit: function ($event) {
                           $event.preventDefault()
-                          _vm.editMode ? _vm.updateUser() : _vm.createUser()
+                          _vm.editMode ? _vm.updateAction() : _vm.createAction()
                         },
                       },
                     },
@@ -63482,19 +63514,6 @@ var staticRenderFns = [
       "a",
       { staticClass: "dropdown-item rounded-top", attrs: { href: "#" } },
       [_c("span", { staticClass: "fas fa-eye me-2" }), _vm._v("View Details")]
-    )
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "dropdown-item text-danger rounded-bottom",
-        attrs: { href: "#" },
-      },
-      [_c("span", { staticClass: "fas fa-trash-alt me-2" }), _vm._v("Remove")]
     )
   },
   function () {
