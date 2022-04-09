@@ -47,20 +47,76 @@
             </div>
         </div>
         <ul class="nav flex-column pt-3 pt-md-0">
-            <router-link to="/dashboard" class="nav-item " tag="li" active-class="active">
-                <router-link to="/dashboard" class="nav-link">
+            <router-link to="/home" class="nav-item " tag="li" active-class="active">
+                <router-link to="/home" class="nav-link">
                     <span class="sidebar-icon">
                         <i class="bi bi-house-fill me-2"></i>
                     </span>
-                    <span class="sidebar-text">Dashboard</span>
+                    <span class="sidebar-text">Home</span>
+                </router-link>
+            </router-link>
+            <router-link to="/product" class="nav-item " tag="li" active-class="active">
+                <router-link to="/product" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-bucket-fill me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Product</span>
+                </router-link>
+            </router-link>
+            <router-link to="/category" class="nav-item " tag="li" active-class="active">
+                <router-link to="/category" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-puzzle-fill me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Category</span>
                 </router-link>
             </router-link>
             <router-link to="/order" class="nav-item " tag="li" active-class="active">
                 <router-link to="/order" class="nav-link">
                     <span class="sidebar-icon">
-                        <i class="bi bi-bucket-fill me-2"></i>
+                        <i class="bi bi-cart-check-fill me-2"></i>
                     </span>
                     <span class="sidebar-text">Order</span>
+                </router-link>
+            </router-link>
+            <router-link to="/flash-sale" class="nav-item " tag="li" active-class="active">
+                <router-link to="/flash-sale" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-percent me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Flash Sale</span>
+                </router-link>
+            </router-link>
+            <router-link to="/banner" class="nav-item " tag="li" active-class="active">
+                <router-link to="/banner" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-image-fill me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Banner</span>
+                </router-link>
+            </router-link>
+            <router-link to="/bank" class="nav-item " tag="li" active-class="active">
+                <router-link to="/bank" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-bank2 me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Bank</span>
+                </router-link>
+            </router-link>
+            <router-link to="/payment" class="nav-item " tag="li" active-class="active">
+                <router-link to="/payment" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-cash-coin me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Payment</span>
+                </router-link>
+            </router-link>
+            <router-link to="/voucher" class="nav-item " tag="li" active-class="active">
+                <router-link to="/voucher" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-receipt me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Voucher</span>
                 </router-link>
             </router-link>
             <router-link to="/user" class="nav-item" tag="li" active-class="active">
@@ -93,7 +149,22 @@
                     <ul class="flex-column nav">
                         <li class="nav-item ">
                             <a class="nav-link" href="{{ asset('/dist') }}/pages/tables/bootstrap-tables.html">
-                                <span class="sidebar-text">Menu</span>
+                                <span class="sidebar-text">Site Config</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{{ asset('/dist') }}/pages/tables/bootstrap-tables.html">
+                                <span class="sidebar-text">Email SMTP</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{{ asset('/dist') }}/pages/tables/bootstrap-tables.html">
+                                <span class="sidebar-text">Telegram Notification</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{{ asset('/dist') }}/pages/tables/bootstrap-tables.html">
+                                <span class="sidebar-text">Social Media</span>
                             </a>
                         </li>
                     </ul>

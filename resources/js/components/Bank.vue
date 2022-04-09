@@ -10,8 +10,8 @@
       "
     >
       <div class="d-block mb-md-0">
-        <h2 class="h4">All Users</h2>
-        <p class="mb-0">Manage user login application.</p>
+        <h2 class="h4">All Bank</h2>
+        <p class="mb-0">Manage bank for peyment.</p>
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
@@ -60,7 +60,7 @@
               v-model="searchData"
               type="text"
               class="form-control"
-              placeholder="Search User"
+              placeholder="Search Bank"
             />
             <button class="btn btn-sm btn-gray-800" @click="search">
               Search
@@ -121,63 +121,27 @@
       </div>
     </div>
     <div class="card card-body border-0 shadow table-wrapper table-responsive">
-      <table class="table table-hover">
+      <table class="table table-hover align-items-center">
         <thead>
           <tr>
             <th class="border-gray-200">#</th>
             <th class="border-gray-200">Name</th>
-            <th class="border-gray-200">Email</th>
-            <th class="border-gray-200">Status</th>
+            <th class="border-gray-200">Description</th>
             <th class="border-gray-200">Action</th>
           </tr>
         </thead>
         <tbody>
           <!-- Item -->
-          <template v-if="users.data">
-            <tr v-for="(user, index) in users.data" :key="user.id">
+          <template v-if="bank.data && bank.total > 0">
+            <tr v-for="(bank, index) in bank.data" :key="bank.id">
               <td>
                 {{ (currentPage - 1) * perPage + index + 1 }}
               </td>
               <td>
-                <span class="fw-normal">{{ user.name }}</span>
+                <span class="fw-normal">{{ bank.name }}</span>
               </td>
               <td>
-                <span class="fw-normal">{{ user.email }}</span>
-              </td>
-              <td>
-                <span
-                  v-if="user.email_verified_at != null"
-                  class="fw-bold text-success"
-                >
-                  <svg
-                    class="icon icon-xxs text-success me-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    ></path>
-                  </svg>
-                  Verified
-                </span>
-                <span v-else class="fw-bold text-danger">
-                  <svg
-                    class="icon icon-xxs text-danger me-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clip-rule="evenodd"
-                    ></path>
-                  </svg>
-                  Pending
-                </span>
+                <span class="fw-normal">{{ bank.description }}</span>
               </td>
               <td>
                 <div class="btn-group">
@@ -202,13 +166,13 @@
                     <a class="dropdown-item rounded-top" href="#"
                       ><span class="fas fa-eye me-2"></span>View Details</a
                     >
-                    <a class="dropdown-item" href="#" @click="editModal(user)"
+                    <a class="dropdown-item" href="#" @click="editModal(bank)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
                       class="dropdown-item text-danger rounded-bottom"
                       href="#"
-                      @click="deleteAction(user.id)"
+                      @click="deleteAction(bank.id)"
                       ><span class="fas fa-trash-alt me-2"></span>Remove</a
                     >
                   </div>
@@ -229,6 +193,7 @@
         class="
           card-footer
           px-3
+          pb-5
           border-0
           d-flex
           flex-column flex-lg-row
@@ -236,7 +201,7 @@
           justify-content-between
         "
       >
-        <pagination :data="users" @pagination-change-page="getData">
+        <pagination :data="bank" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
           </template>
@@ -259,10 +224,10 @@
         aria-labelledby="modal-default"
         aria-hidden="true"
       >
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h2 class="h6 modal-title">Form User</h2>
+              <h2 class="h6 modal-title">Form Bank</h2>
               <button
                 type="button"
                 class="btn-close"
@@ -270,17 +235,19 @@
                 aria-label="Close"
               ></button>
             </div>
-            <form @submit.prevent="editMode ? updateAction() : createAction()">
+            <form
+              @submit.prevent="editMode ? updateAction() : createAction()"
+              autocomplete="off"
+              enctype="multipart/form-data"
+            >
               <div class="modal-body">
-                <!-- Form -->
                 <div class="form-group mb-1">
                   <label for="name">Name</label>
-
                   <input
                     v-model="form.name"
                     type="text"
                     class="form-control"
-                    placeholder="John Doe"
+                    placeholder="Permata"
                     id="name"
                     name="name"
                     autofocus
@@ -288,57 +255,43 @@
                   />
                   <has-error :form="form" field="name"></has-error>
                 </div>
-                <!-- End of Form -->
-                <!-- Form -->
                 <div class="form-group mb-1">
-                  <label for="email">Email</label>
+                  <label for="account_number">Account Number</label>
                   <input
-                    v-model="form.email"
-                    type="email"
+                    v-model="form.account_number"
+                    type="number"
                     class="form-control"
-                    placeholder="example@company.com"
-                    id="email"
-                    name="email"
-                    :class="{ 'is-invalid': form.errors.has('email') }"
+                    placeholder="Account Number"
+                    id="account_number"
+                    name="account_number"
+                    autofocus
+                    :class="{ 'is-invalid': form.errors.has('account_number') }"
                   />
-                  <has-error :form="form" field="email"></has-error>
+                  <has-error :form="form" field="account_number"></has-error>
                 </div>
-                <!-- End of Form -->
-                <div class="form-group">
-                  <!-- Form -->
-                  <div class="form-group mb-1">
-                    <label for="password">Password</label>
-                    <input
-                      v-model="form.password"
-                      type="password"
-                      placeholder="Password"
-                      class="form-control"
-                      id="password"
-                      name="password"
-                      :class="{ 'is-invalid': form.errors.has('password') }"
-                    />
-                    <has-error :form="form" field="password"></has-error>
-                  </div>
-                  <!-- End of Form -->
-                  <!-- Form -->
-                  <div class="form-group mb-1">
-                    <label for="confirm_password">Confirm Password</label>
-                    <div class="input-group">
-                      <input
-                        v-model="form.password_confirmation"
-                        type="password"
-                        placeholder="Confirm Password"
-                        class="form-control"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                      />
-                      <has-error
-                        :form="form"
-                        field="password_confirmation"
-                      ></has-error>
-                    </div>
-                  </div>
-                  <!-- End of Form -->
+                <div class="form-group mb-1">
+                  <label for="description">Description</label>
+                  <textarea
+                    v-model="form.description"
+                    class="form-control"
+                    placeholder="Lorem ipsum dolor sit amet"
+                    id="description"
+                    name="description"
+                    :class="{ 'is-invalid': form.errors.has('description') }"
+                  >
+                  </textarea>
+                  <has-error :form="form" field="description"></has-error>
+                </div>
+                <div class="form-group mb-1">
+                  <label for="description">Logo</label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    name="logo"
+                    @change="handleFile"
+                    :class="{ 'is-invalid': form.errors.has('logo') }"
+                  />
+                  <has-error :form="form" field="logo"></has-error>
                 </div>
               </div>
               <div class="modal-footer">
@@ -374,11 +327,13 @@
 </template>
 
 <script>
+const objectToFormData = require("object-to-formdata");
+
 export default {
   data() {
     return {
       editMode: false,
-      users: {},
+      bank: {},
       currentPage: 1,
       from: 0,
       to: 0,
@@ -388,14 +343,20 @@ export default {
       form: new Form({
         id: "",
         name: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
+        account_number: "",
+        description: "",
+        logo: null,
       }),
     };
   },
-  mounted() {},
+  mounted() {
+    console.log("Component mounted.");
+  },
   methods: {
+    handleFile(event) {
+      const file = event.target.files[0];
+      this.form.logo = file;
+    },
     search() {
       this.$Progress.start();
       this.getData(1);
@@ -404,14 +365,14 @@ export default {
     getData(page = this.currentPage, reload = false) {
       this.$Progress.start();
       axios
-        .get("api/v1/user", {
+        .get("api/v1/bank", {
           params: {
             page: !reload ? page : 1,
             search: this.searchData,
           },
         })
         .then(({ data }) => {
-          this.users = data.data;
+          this.bank = data.data;
           this.pagination(data);
         });
       this.$Progress.finish();
@@ -422,17 +383,30 @@ export default {
       let modal = $("#formModal");
       modal.modal("show");
     },
-    editModal(user) {
+    editModal(bank) {
       this.editMode = true;
       this.clearForm();
       let modal = $("#formModal");
       modal.modal("show");
-      this.form.fill(user);
+      bank.logo = null;
+      this.form.fill(bank);
     },
     createAction() {
       this.$Progress.start();
       this.form
-        .post("api/v1/user")
+        .submit("post", "api/v1/bank", {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
         .then((response) => {
           $("#formModal").modal("hide");
 
@@ -453,7 +427,20 @@ export default {
     },
     updateAction() {
       this.form
-        .put("api/v1/user/" + this.form.id)
+        .submit("post", "api/v1/bank/" + this.form.id, {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              data["_method"] = "PUT";
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
         .then((response) => {
           // success
           $("#formModal").modal("hide");
@@ -483,7 +470,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           this.form
-            .delete("api/v1/user/" + id)
+            .delete("api/v1/bank/" + id)
             .then(() => {
               Swal.fire("Deleted!", "Data has been deleted.", "success");
               this.getData();
