@@ -10,8 +10,8 @@
       "
     >
       <div class="d-block mb-md-0">
-        <h2 class="h4">All Category</h2>
-        <p class="mb-0">Manage category for product.</p>
+        <h2 class="h4">All Payment</h2>
+        <p class="mb-0">Manage payment method.</p>
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
@@ -60,7 +60,7 @@
               v-model="searchData"
               type="text"
               class="form-control"
-              placeholder="Search Category"
+              placeholder="Search Payment"
             />
             <button class="btn btn-sm btn-gray-800" @click="search">
               Search
@@ -132,16 +132,16 @@
         </thead>
         <tbody>
           <!-- Item -->
-          <template v-if="category.data && category.total > 0">
-            <tr v-for="(category, index) in category.data" :key="category.id">
+          <template v-if="payment.data && payment.total > 0">
+            <tr v-for="(payment, index) in payment.data" :key="payment.id">
               <td>
                 {{ (currentPage - 1) * perPage + index + 1 }}
               </td>
               <td>
-                <span class="fw-normal">{{ category.name }}</span>
+                <span class="fw-normal">{{ payment.name }}</span>
               </td>
               <td>
-                <span class="fw-normal">{{ category.description }}</span>
+                <span class="fw-normal">{{ payment.description }}</span>
               </td>
               <td>
                 <div class="btn-group">
@@ -169,13 +169,13 @@
                     <a
                       class="dropdown-item"
                       href="#"
-                      @click="editModal(category)"
+                      @click="editModal(payment)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
                       class="dropdown-item text-danger rounded-bottom"
                       href="#"
-                      @click="deleteAction(category.id)"
+                      @click="deleteAction(payment.id)"
                       ><span class="fas fa-trash-alt me-2"></span>Remove</a
                     >
                   </div>
@@ -204,7 +204,7 @@
           justify-content-between
         "
       >
-        <pagination :data="category" @pagination-change-page="getData">
+        <pagination :data="payment" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
           </template>
@@ -227,10 +227,10 @@
         aria-labelledby="modal-default"
         aria-hidden="true"
       >
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h2 class="h6 modal-title">Form Category</h2>
+              <h2 class="h6 modal-title">Form Payment</h2>
               <button
                 type="button"
                 class="btn-close"
@@ -250,7 +250,7 @@
                     v-model="form.name"
                     type="text"
                     class="form-control"
-                    placeholder="Category Name"
+                    placeholder="Payment Name"
                     id="name"
                     name="name"
                     autofocus
@@ -312,7 +312,7 @@ export default {
   data() {
     return {
       editMode: false,
-      category: {},
+      payment: {},
       currentPage: 1,
       from: 0,
       to: 0,
@@ -338,14 +338,14 @@ export default {
     getData(page = this.currentPage, reload = false) {
       this.$Progress.start();
       axios
-        .get("api/v1/category", {
+        .get("api/v1/payment", {
           params: {
             page: !reload ? page : 1,
             search: this.searchData,
           },
         })
         .then(({ data }) => {
-          this.category = data.data;
+          this.payment = data.data;
           this.pagination(data);
         });
       this.$Progress.finish();
@@ -356,17 +356,17 @@ export default {
       let modal = $("#formModal");
       modal.modal("show");
     },
-    editModal(category) {
+    editModal(payment) {
       this.editMode = true;
       this.clearForm();
       let modal = $("#formModal");
       modal.modal("show");
-      this.form.fill(category);
+      this.form.fill(payment);
     },
     createAction() {
       this.$Progress.start();
       this.form
-        .post("api/v1/category")
+        .post("api/v1/payment")
         .then((response) => {
           $("#formModal").modal("hide");
 
@@ -387,7 +387,7 @@ export default {
     },
     updateAction() {
       this.form
-        .put("api/v1/category/" + this.form.id)
+        .put("api/v1/payment/" + this.form.id)
         .then((response) => {
           // success
           $("#formModal").modal("hide");
@@ -417,7 +417,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           this.form
-            .delete("api/v1/category/" + id)
+            .delete("api/v1/payment/" + id)
             .then(() => {
               Swal.fire("Deleted!", "Data has been deleted.", "success");
               this.getData();

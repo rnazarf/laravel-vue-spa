@@ -23,6 +23,13 @@ Auth::routes([
 ]);
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::get('js/simplebar.esm.js.map', function () {
+        return redirect('/home');
+    });
+    Route::get('/', function () {
+        return redirect('/home');
+    });
+
     Route::get('{any}', function () {
         return view('app');
     })->where('any', '.*');

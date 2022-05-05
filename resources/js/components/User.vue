@@ -236,6 +236,11 @@
           justify-content-between
         "
       >
+        <div class="fw-normal small mt-4 mt-lg-0">
+          Showing <b>{{ from }}</b> to <b>{{ to }}</b> of
+          <b>{{ total }}</b> entries
+        </div>
+
         <pagination :data="users" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
@@ -244,10 +249,6 @@
             <span>Next</span>
           </template>
         </pagination>
-        <div class="fw-normal small mt-4 mt-lg-0">
-          Showing <b>{{ from }}</b> to <b>{{ to }}</b> of
-          <b>{{ total }}</b> entries
-        </div>
       </div>
 
       <!-- Modal Content -->
@@ -411,8 +412,8 @@ export default {
           },
         })
         .then(({ data }) => {
-          this.users = data.data;
-          this.pagination(data);
+          this.users = data;
+          this.pagination(data.meta);
         });
       this.$Progress.finish();
     },
@@ -495,11 +496,11 @@ export default {
       });
     },
     pagination(meta) {
-      this.currentPage = meta.data.current_page;
-      this.perPage = meta.data.per_page;
-      this.from = meta.data.from ?? 0;
-      this.to = meta.data.to ?? 0;
-      this.total = meta.data.total;
+      this.currentPage = meta.current_page;
+      this.perPage = meta.per_page;
+      this.from = meta.from ?? 0;
+      this.to = meta.to ?? 0;
+      this.total = meta.total;
     },
     clearForm() {
       this.form.reset();

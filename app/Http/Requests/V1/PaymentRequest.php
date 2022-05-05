@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRequest extends FormRequest
+class PaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class CategoryRequest extends FormRequest
     {
         if ($this->isMethod('post')) {
             return $this->createRules();
-        } elseif ($this->isMethod('put')) {
+        } else {
             return $this->updateRules();
         }
     }
@@ -33,16 +33,16 @@ class CategoryRequest extends FormRequest
     public function createRules(): array
     {
         return [
-            'name' => 'required|string|max:191unique:users',
-            'description' => 'required|string|max:191',
+            'name' => 'required|string|max:191|unique:payments,name',
+            'description' => 'nullable|max:191',
         ];
     }
 
     public function updateRules(): array
     {
         return [
-            'name' => 'required|string|max:191unique:users,name,' . $this->id,
-            'description' => 'required|string|max:191',
+            'name' => 'required|string|max:191|unique:payments,name,' . $this->id,
+            'description' => 'nullable|max:191',
         ];
     }
 }

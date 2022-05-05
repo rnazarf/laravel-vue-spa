@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Requests\V1\UserRequest;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -30,9 +32,13 @@ class UserController extends BaseController
             $users = $users::where('name', 'like', '%' . $request->search . '%');
         }
 
-        $result = $users->orderBy('id', 'desc')->paginate(10);
+        return new UserCollection($users->paginate(10));
+    }
 
-        return $this->sendResponse($result, 'User List');
+    public function show($id)
+    {
+        $user = $this->user->find($id);
+        return new UserResource($user);    
     }
 
     /**
@@ -60,17 +66,6 @@ class UserController extends BaseController
         ]);
 
         return $this->sendResponse($user, 'User Created Successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**

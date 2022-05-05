@@ -1,0 +1,24 @@
+product harus bisa menampung data item seperti nama, deskripsi, kategori, subkategori, dan memiliki varian item, setiap variant item memiliki harga, stock, ukuran, warna, dan setiap item ada varian nya, setiap produk memiliki photo.
+
+product
+id    |   name                   |   description        |   subkategory_id    |   sold    |   status
+1     |   Sweater Crewneck       |   Deskripsi produk   |   1                 |   100     |   1|0
+
+product_gallery
+id    |   product_id    |   image   
+1     |   1             |   img-item1.jpg
+2     |   1             |   img-item2.jpg
+
+product_variant
+id    |   product_id    |   price   |   color   |   size    |   stock
+1     |   1             |   900000  |   Merah   |   M       |   10
+2     |   1             |   800000  |   Biru    |   L       |   10
+
+category
+id    |   name       |   image 
+1     |   Pakaian    |   img.jpg
+
+subcategory
+id    |   name          |   image         |   category_id
+1     |   Baju Dewasa   |   img-sub1.jpg   |   1
+2     |   Baju Anak     |   img-sub2.jpg   |   1

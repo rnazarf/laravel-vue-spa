@@ -126,6 +126,7 @@
           <tr>
             <th class="border-gray-200">#</th>
             <th class="border-gray-200">Name</th>
+            <th class="border-gray-200">Account Number</th>
             <th class="border-gray-200">Description</th>
             <th class="border-gray-200">Action</th>
           </tr>
@@ -139,6 +140,9 @@
               </td>
               <td>
                 <span class="fw-normal">{{ bank.name }}</span>
+              </td>
+              <td>
+                <span class="fw-normal">{{ bank.account_number }}</span>
               </td>
               <td>
                 <span class="fw-normal">{{ bank.description }}</span>
@@ -247,7 +251,7 @@
                     v-model="form.name"
                     type="text"
                     class="form-control"
-                    placeholder="Permata"
+                    placeholder="Bank Name"
                     id="name"
                     name="name"
                     autofocus

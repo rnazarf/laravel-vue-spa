@@ -35,6 +35,27 @@ export default [
     }
   },
   {
+    path: '/payment',
+    component: require('./components/Payment.vue').default,
+    meta: {
+      breadcrumb: 'Payment'
+    }
+  },
+  {
+    path: '/voucher',
+    component: require('./components/Voucher.vue').default,
+    meta: {
+      breadcrumb: 'Voucher'
+    }
+  },
+  {
+    path: '/product',
+    component: require('./components/Product.vue').default,
+    meta: {
+      breadcrumb: 'Product'
+    }
+  },
+  {
     path: '*',
     component: require('./components/Dashboard.vue').default
   },
