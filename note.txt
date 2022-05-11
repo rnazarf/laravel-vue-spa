@@ -2,7 +2,7 @@ product harus bisa menampung data item seperti nama, deskripsi, kategori, subkat
 
 product
 id    |   name                   |   description        |   subkategory_id    |   sold    |   status
-1     |   Sweater Crewneck       |   Deskripsi produk   |   1                 |   100     |   1|0
+1     |   Sweater Crewneck       |   Deskripsi produk   |   1                 |   100     |   Y|N : active:nonactive
 
 product_gallery
 id    |   product_id    |   image   

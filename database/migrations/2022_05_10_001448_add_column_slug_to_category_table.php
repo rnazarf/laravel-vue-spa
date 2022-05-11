@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductsTable extends Migration
+class AddColumnSlugToCategoryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,8 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('description');
+        Schema::table('categories', function (Blueprint $table) {
             $table->string('slug');
-            $table->foreignId('subcategory_id');
-            $table->enum('status', ['Y', 'N'])->default('N');
-            $table->timestamps();
         });
     }
 
@@ -31,6 +25,8 @@ class CreateProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropColumn('slug');
+        });
     }
 }

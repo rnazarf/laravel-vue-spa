@@ -71,6 +71,14 @@
                     <span class="sidebar-text">Category</span>
                 </router-link>
             </router-link>
+            <router-link to="/subcategory" class="nav-item " tag="li" active-class="active">
+                <router-link to="/subcategory" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="bi bi-exclude me-2"></i>
+                    </span>
+                    <span class="sidebar-text">Subcategory</span>
+                </router-link>
+            </router-link>
             <router-link to="/order" class="nav-item " tag="li" active-class="active">
                 <router-link to="/order" class="nav-link">
                     <span class="sidebar-icon">

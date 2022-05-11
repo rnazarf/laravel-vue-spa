@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\BankController;
 use App\Http\Controllers\API\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\API\V1\SubcategoryController;
 use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,11 @@ Route::group(['middleware' => 'api', 'prefix' => 'v1'], function () {
     Route::post('/category', [CategoryController::class, 'store']);
     Route::put('/category/{id}', [CategoryController::class, 'update']);
     Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
+
+    Route::get('/subcategory', [SubcategoryController::class, 'index']);
+    Route::post('/subcategory', [SubcategoryController::class, 'store']);
+    Route::put('/subcategory/{id}', [SubcategoryController::class, 'update']);
+    Route::delete('/subcategory/{id}', [SubcategoryController::class, 'destroy']);
 
     Route::get('/bank', [BankController::class, 'index']);
     Route::post('/bank', [BankController::class, 'store']);

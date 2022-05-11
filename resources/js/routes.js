@@ -56,7 +56,17 @@ export default [
     }
   },
   {
+    path: '/subcategory',
+    component: require('./components/Subcategory.vue').default,
+    meta: {
+      breadcrumb: 'Sub Category'
+    }
+  },
+  {
     path: '*',
-    component: require('./components/Dashboard.vue').default
+    component: require('./components/404.vue').default,
+    meta: {
+      breadcrumb: 'Not Found'
+    }
   },
 ];
