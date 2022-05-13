@@ -1,0 +1,381 @@
+<template>
+  <div>
+    <div
+      class="
+        d-flex
+        justify-content-between
+        flex-wrap flex-md-nowrap
+        align-items-center
+        py-4
+      "
+    >
+      <div class="d-block mb-md-0">
+        <h2 class="h4">All Banner</h2>
+        <p class="mb-0">Manage your image banner.</p>
+      </div>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <button
+          @click="newModal"
+          class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
+        >
+          <svg
+            class="icon icon-xs me-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+          New
+        </button>
+      </div>
+    </div>
+    <div class="table-settings">
+      <div class="row align-items-center justify-content-between mb-4">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+          <div class="input-group me-2 me-lg-3 fmxw-400">
+            <span class="input-group-text">
+              <svg
+                class="icon icon-xs"
+                x-description="Heroicon name: solid/search"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </span>
+            <input
+              v-model="searchData"
+              type="text"
+              class="form-control"
+              placeholder="Search Banner"
+            />
+            <button class="btn btn-sm btn-gray-800" @click="search">
+              Search
+            </button>
+          </div>
+        </div>
+        <div class="col-4 col-md-2 col-xl-1 ps-md-0 text-end">
+          <div class="dropdown">
+            <button
+              class="
+                btn btn-link
+                text-dark
+                dropdown-toggle dropdown-toggle-split
+                m-0
+                p-1
+              "
+              data-bs-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <svg
+                class="icon icon-sm"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
+              <span class="small ps-3 fw-bold text-dark">Show</span>
+              <a
+                class="dropdown-item d-flex align-items-center fw-bold"
+                href="#"
+                >10
+                <svg
+                  class="icon icon-xxs ms-auto"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path></svg
+              ></a>
+              <a class="dropdown-item fw-bold" href="#">20</a>
+              <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <template v-for="index in 3">
+        <div class="col-12 mb-4" :key="index">
+          <div
+            role="button"
+            title="View Image"
+            class="card shadow border-0 p-0"
+            style="background-image: url('dist/assets/img/profile-cover.jpg')"
+          >
+            <div class="profile-cover rounded-top"></div>
+            <div class="card-body pb-3">
+              <h4 class="h3">Test Banner 1</h4>
+              <p class="text-mute mb-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Ducimus, possimus!
+              </p>
+              <a
+                class="
+                  btn btn-sm btn-gray-800
+                  d-inline-flex
+                  align-items-center
+                  me-2
+                "
+                href="#"
+              >
+                Delete
+              </a>
+              <a
+                class="
+                  btn btn-sm btn-success
+                  d-inline-flex
+                  align-items-center
+                  me-2
+                "
+                href="#"
+              >
+                Set Active
+              </a>
+              <a
+                class="
+                  btn btn-sm btn-danger
+                  d-inline-flex
+                  align-items-center
+                  me-2
+                "
+                href="#"
+              >
+                Set Nonactive
+              </a>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <nav aria-label="page navigation example">
+        <ul class="pagination mb-0">
+          <li class="page-item">
+            <a class="page-link" href="#">Previous</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item active">
+            <a class="page-link" href="#">2</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">3</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">4</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">5</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</template>
+
+<script>
+const objectToFormData = require("object-to-formdata");
+
+export default {
+  data() {
+    return {
+      editMode: false,
+      banner: {},
+      currentPage: 1,
+      from: 0,
+      to: 0,
+      total: 0,
+      perPage: 10,
+      searchData: "",
+      form: new Form({
+        id: "",
+        name: "",
+        account_number: "",
+        description: "",
+        logo: null,
+      }),
+    };
+  },
+  mounted() {
+    console.log("Component mounted.");
+  },
+  methods: {
+    handleFile(event) {
+      const file = event.target.files[0];
+      this.form.logo = file;
+    },
+    search() {
+      this.$Progress.start();
+      this.getData(1);
+      this.$Progress.finish();
+    },
+    getData(page = this.currentPage, reload = false) {
+      this.$Progress.start();
+      axios
+        .get("api/v1/banner", {
+          params: {
+            page: !reload ? page : 1,
+            search: this.searchData,
+          },
+        })
+        .then(({ data }) => {
+          this.banner = data.data;
+          this.pagination(data);
+        });
+      this.$Progress.finish();
+    },
+    newModal() {
+      this.editMode = false;
+      this.clearForm();
+      let modal = $("#formModal");
+      modal.modal("show");
+    },
+    editModal(banner) {
+      this.editMode = true;
+      this.clearForm();
+      let modal = $("#formModal");
+      modal.modal("show");
+      banner.logo = null;
+      this.form.fill(banner);
+    },
+    createAction() {
+      this.$Progress.start();
+      this.form
+        .submit("post", "api/v1/banner", {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
+        .then((response) => {
+          $("#formModal").modal("hide");
+
+          Toast.fire({
+            icon: "success",
+            title: response.data.message,
+          });
+
+          this.getData(1, true);
+        })
+        .catch(() => {
+          Toast.fire({
+            icon: "error",
+            title: "Some error occured! Please try again",
+          });
+        });
+      this.$Progress.finish();
+    },
+    updateAction() {
+      this.form
+        .submit("post", "api/v1/banner/" + this.form.id, {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              data["_method"] = "PUT";
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
+        .then((response) => {
+          // success
+          $("#formModal").modal("hide");
+
+          Toast.fire({
+            icon: "success",
+            title: response.data.message,
+          });
+
+          this.getData();
+        })
+        .catch(() => {
+          Toast.fire({
+            icon: "error",
+            title: "Some error occured! Please try again",
+          });
+        });
+    },
+    deleteAction(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.value) {
+          this.form
+            .delete("api/v1/banner/" + id)
+            .then(() => {
+              Swal.fire("Deleted!", "Data has been deleted.", "success");
+              this.getData();
+            })
+            .catch((data) => {
+              Swal.fire("Failed!", data.message, "warning");
+            });
+        }
+      });
+    },
+    pagination(meta) {
+      this.currentPage = meta.data.current_page;
+      this.perPage = meta.data.per_page;
+      this.from = meta.data.from ?? 0;
+      this.to = meta.data.to ?? 0;
+      this.total = meta.data.total;
+    },
+    clearForm() {
+      this.form.reset();
+      this.form.errors.clear();
+    },
+  },
+  created() {
+    this.$Progress.start();
+    setTimeout(() => {
+      this.getData();
+      this.$Progress.finish();
+    }, 1000);
+  },
+};
+</script>

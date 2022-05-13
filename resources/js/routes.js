@@ -61,6 +61,13 @@ export default [
     meta: {
       breadcrumb: 'Sub Category'
     }
+  },  
+  {
+    path: '/banner',
+    component: require('./components/Banner.vue').default,
+    meta: {
+      breadcrumb: 'Banner'
+    }
   },
   {
     path: '*',

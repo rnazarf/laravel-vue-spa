@@ -36,7 +36,7 @@ class SubcategoryController extends BaseController
             return $this->sendError('Validation Error.', $request->validator->errors());
         }
 
-        if ($request->hasFile('logo')) {
+        if ($request->hasFile('image')) {
             $filePath = UploadService::saveFile($request->file('image'), 'images/subcategory/');
         }
 
@@ -72,7 +72,9 @@ class SubcategoryController extends BaseController
     public function destroy($id)
     {
         $subcategory = $this->subcategory->findOrFail($id);
-        $subcategory->delete();
+        if ($subcategory->delete()) {
+            UploadService::deleteFile($subcategory->image);
+        }
 
         return $this->sendResponse([$subcategory], 'Subcategory has been deleted');
     }

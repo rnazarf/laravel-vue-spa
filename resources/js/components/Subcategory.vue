@@ -111,8 +111,9 @@
                     fill-rule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clip-rule="evenodd"
-                  ></path></svg
-              ></a>
+                  ></path>
+                </svg>
+              </a>
               <a class="dropdown-item fw-bold" href="#">20</a>
               <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
             </div>
@@ -233,7 +234,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h2 class="h6 modal-title">Form Category</h2>
+              <h2 class="h6 modal-title">Form Subcategory</h2>
               <button
                 type="button"
                 class="btn-close"
@@ -343,6 +344,8 @@
 </template>
 
 <script>
+const objectToFormData = require("object-to-formdata");
+
 export default {
   data() {
     return {
@@ -413,7 +416,19 @@ export default {
     createAction() {
       this.$Progress.start();
       this.form
-        .post("api/v1/subcategory")
+        .submit("post", "api/v1/subcategory", {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
         .then((response) => {
           $("#formModal").modal("hide");
 
@@ -434,7 +449,20 @@ export default {
     },
     updateAction() {
       this.form
-        .put("api/v1/subcategory/" + this.form.id)
+        .submit("post", "api/v1/subcategory/" + this.form.id, {
+          // Transform form data to FormData
+          transformRequest: [
+            function (data, headers) {
+              data["_method"] = "PUT";
+              return objectToFormData(data);
+            },
+          ],
+
+          onUploadProgress: (e) => {
+            // Do whatever you want with the progress event
+            // console.log(e)
+          },
+        })
         .then((response) => {
           // success
           $("#formModal").modal("hide");
