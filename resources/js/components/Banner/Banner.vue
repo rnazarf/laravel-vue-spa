@@ -121,96 +121,227 @@
       </div>
     </div>
     <div class="row">
-      <template v-for="index in 3">
-        <div class="col-12 mb-4" :key="index">
-          <div
-            role="button"
-            title="View Image"
-            class="card shadow border-0 p-0"
-            style="background-image: url('dist/assets/img/profile-cover.jpg')"
-          >
-            <div class="profile-cover rounded-top"></div>
-            <div class="card-body pb-3">
-              <h4 class="h3">Test Banner 1</h4>
+      <template v-if="banners.data && banners.data.length > 0">
+        <template v-for="banner in banners.data">
+          <div class="col-12 mb-4" :key="banner.id">
+            <div
+              role="button"
+              title="View Image"
+              class="card shadow border-0 p-0"
+            >
+              <div
+                class="profile-cover rounded-top"
+                @click="openModal(banner)"
+                :style="`background-image: url('${banner.image}')`"
+              ></div>
+              <div class="card-body pb-3">
+                <h4 class="h3">{{ banner.title }}</h4>
+                <p class="text-mute mb-2">
+                  {{ banner.description }}
+                </p>
+                <a
+                  class="
+                    btn btn-sm btn-secondary
+                    d-inline-flex
+                    align-items-center
+                    me-2
+                  "
+                  href="#"
+                >
+                  Edit
+                </a>
+                <a
+                  class="
+                    btn btn-sm btn-gray-800
+                    d-inline-flex
+                    align-items-center
+                    me-2
+                  "
+                  href="#"
+                >
+                  Delete
+                </a>
+                <template v-if="banner.status == 'Y'">
+                  <a
+                    class="
+                      btn btn-sm btn-danger
+                      d-inline-flex
+                      align-items-center
+                      me-2
+                    "
+                    href="#"
+                  >
+                    Set Nonactive
+                  </a>
+                </template>
+                <template v-else>
+                  <a
+                    class="
+                      btn btn-sm btn-success
+                      d-inline-flex
+                      align-items-center
+                      me-2
+                    "
+                    href="#"
+                  >
+                    Set Active
+                  </a>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
+      <template v-else>
+        <div class="col-12">
+          <div class="card shadow border-0">
+            <div class="card-body p-5 text-center">
+              <h4 class="h3">No Banner Found</h4>
               <p class="text-mute mb-2">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Ducimus, possimus!
               </p>
-              <a
-                class="
-                  btn btn-sm btn-gray-800
-                  d-inline-flex
-                  align-items-center
-                  me-2
-                "
-                href="#"
-              >
-                Delete
-              </a>
-              <a
-                class="
-                  btn btn-sm btn-success
-                  d-inline-flex
-                  align-items-center
-                  me-2
-                "
-                href="#"
-              >
-                Set Active
-              </a>
-              <a
-                class="
-                  btn btn-sm btn-danger
-                  d-inline-flex
-                  align-items-center
-                  me-2
-                "
-                href="#"
-              >
-                Set Nonactive
-              </a>
             </div>
           </div>
         </div>
       </template>
+      <div class="row p-2">
+        <div class="col-7">
+          Showing <b>{{ from }}</b> to <b>{{ to }}</b> of
+          <b>{{ total }}</b> entries
+        </div>
+        <div class="col-5">
+          <div class="btn-group float-end">
+            <pagination :data="banners" @pagination-change-page="getData">
+              <template #prev-nav>
+                <span>Previous</span>
+              </template>
+              <template #next-nav>
+                <span>Next</span>
+              </template>
+            </pagination>
+          </div>
+        </div>
+      </div>
 
-      <nav aria-label="page navigation example">
-        <ul class="pagination mb-0">
-          <li class="page-item">
-            <a class="page-link" href="#">Previous</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">1</a>
-          </li>
-          <li class="page-item active">
-            <a class="page-link" href="#">2</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">3</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">4</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">5</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">Next</a>
-          </li>
-        </ul>
-      </nav>
+      <!-- Modal Content -->
+      <modal-image
+        v-show="isModalVisible"
+        @close-modal="closeModal"
+        :dataBanner="bannerData"
+      />
+
+      <div
+        class="modal fade"
+        id="formModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modal-default"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="h6 modal-title">Form Banner</h2>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form
+              @submit.prevent="createAction()"
+              autocomplete="off"
+              enctype="multipart/form-data"
+            >
+              <div class="modal-body">
+                <div class="form-group mb-1">
+                  <label for="title">Title</label>
+                  <input
+                    v-model="form.title"
+                    type="text"
+                    class="form-control"
+                    placeholder="Banner Title"
+                    id="title"
+                    name="title"
+                    autofocus
+                    :class="{ 'is-invalid': form.errors.has('title') }"
+                  />
+                  <has-error :form="form" field="title"></has-error>
+                </div>
+                <div class="form-group mb-1">
+                  <label for="description">Description</label>
+                  <textarea
+                    v-model="form.description"
+                    class="form-control"
+                    placeholder="Lorem ipsum dolor sit amet"
+                    id="description"
+                    name="description"
+                    :class="{ 'is-invalid': form.errors.has('description') }"
+                  >
+                  </textarea>
+                  <has-error :form="form" field="description"></has-error>
+                </div>
+                <div class="form-group mb-1">
+                  <label for="description">Image</label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    name="image"
+                    @change="handleFile"
+                    :class="{ 'is-invalid': form.errors.has('image') }"
+                  />
+                  <has-error :form="form" field="image"></has-error>
+                </div>
+                <div class="form-group mb-1">
+                  <label for="status">Status</label>
+                  <select
+                    v-model="form.status"
+                    name="status"
+                    id="status"
+                    class="form-select"
+                    :class="{ 'is-invalid': form.errors.has('status') }"
+                  >
+                    <option value="N">Tidak Aktif</option>
+                    <option value="Y">Aktif</option>
+                  </select>
+                  <has-error :form="form" field="status"></has-error>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-secondary">Create</button>
+                <button
+                  type="button"
+                  class="btn btn-link text-gray-600 ms-auto"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- End of Modal Content -->
     </div>
   </div>
 </template>
 
 <script>
+import ImageModal from "./ImageModal";
+
 const objectToFormData = require("object-to-formdata");
 
 export default {
+  components: {
+    "modal-image": ImageModal,
+  },
   data() {
     return {
-      editMode: false,
-      banner: {},
+      bannerData: {},
+      isModalVisible: false,
+      banners: {},
       currentPage: 1,
       from: 0,
       to: 0,
@@ -219,10 +350,10 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        account_number: "",
+        title: "",
+        image: null,
         description: "",
-        logo: null,
+        status: "",
       }),
     };
   },
@@ -230,9 +361,16 @@ export default {
     console.log("Component mounted.");
   },
   methods: {
+    openModal(banner) {
+      this.bannerData = banner;
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     handleFile(event) {
       const file = event.target.files[0];
-      this.form.logo = file;
+      this.form.image = file;
     },
     search() {
       this.$Progress.start();
@@ -249,8 +387,9 @@ export default {
           },
         })
         .then(({ data }) => {
-          this.banner = data.data;
-          this.pagination(data);
+          this.banners = data;
+          // console.log(this.banners.data.length);
+          this.pagination(data.meta);
         });
       this.$Progress.finish();
     },
@@ -259,14 +398,6 @@ export default {
       this.clearForm();
       let modal = $("#formModal");
       modal.modal("show");
-    },
-    editModal(banner) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      banner.logo = null;
-      this.form.fill(banner);
     },
     createAction() {
       this.$Progress.start();
@@ -359,11 +490,11 @@ export default {
       });
     },
     pagination(meta) {
-      this.currentPage = meta.data.current_page;
-      this.perPage = meta.data.per_page;
-      this.from = meta.data.from ?? 0;
-      this.to = meta.data.to ?? 0;
-      this.total = meta.data.total;
+      this.currentPage = meta.current_page;
+      this.perPage = meta.per_page;
+      this.from = meta.from ?? 0;
+      this.to = meta.to ?? 0;
+      this.total = meta.total;
     },
     clearForm() {
       this.form.reset();

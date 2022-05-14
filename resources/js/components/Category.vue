@@ -220,7 +220,7 @@
 
       <!-- Modal Content -->
       <div
-        class="modal fade"
+        class="modal"
         id="formModal"
         tabindex="-1"
         role="dialog"

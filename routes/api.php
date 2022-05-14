@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\BankController;
+use App\Http\Controllers\API\V1\BannerController;
 use App\Http\Controllers\API\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\API\V1\SubcategoryController;
@@ -56,4 +57,10 @@ Route::group(['middleware' => 'api', 'prefix' => 'v1'], function () {
     Route::put('/voucher/{id}', [VoucherController::class, 'update']);
     Route::put('/voucher/{id}/status', [VoucherController::class, 'updateStatus']);
     Route::delete('/voucher/{id}', [VoucherController::class, 'destroy']);
+
+    Route::get('/banner', [BannerController::class, 'index']);
+    Route::get('/banner/{id}', [BannerController::class, 'show']);
+    Route::post('/banner', [BannerController::class, 'store']);
+    Route::put('/banner/{id}/status', [BannerController::class, 'updateStatus']);
+    Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
 });

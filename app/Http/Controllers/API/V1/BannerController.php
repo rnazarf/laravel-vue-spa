@@ -2,30 +2,37 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Http\Requests\V1\BannerRequest;
+use App\Http\Resources\BannerCollection;
 use App\Models\Banner;
-use Illuminate\Database\Console\Migrations\BaseCommand;
+use App\Services\UploadService;
 use Illuminate\Http\Request;
 
-class BannerController extends BaseCommand
+class BannerController extends BaseController
 {
+    protected $banner;
+
+    public function __construct(Banner $banner)
+    {
+        $this->banner = $banner;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $banners = $this->banner;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if ($request->search) {
+            $banners = $banners::where('title', 'like', '%' . $request->search . '%');
+        }
+
+        $result = $banners->orderBy('id', 'desc')->paginate(3);
+
+        return new BannerCollection($result);
     }
 
     /**
@@ -34,29 +41,33 @@ class BannerController extends BaseCommand
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BannerRequest $request)
     {
-        //
+        $filePath = null;
+
+        if (!$request->validated()) {
+            return $this->sendError('Validation Error.', $request->validator->errors());
+        }
+        if ($request->hasFile('image')) {
+            $filePath = UploadService::saveFile($request->file('image'), 'images/banners/');
+        }
+
+        $banner = $this->banner::create([
+            'title' => $request['title'],
+            'description' => $request['description'],
+            'image' => $filePath,
+            'status' => $request['status'],
+        ]);
+
+        return $this->sendResponse($banner, 'Banner created successfully.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Banner  $banner
      * @return \Illuminate\Http\Response
      */
-    public function show(Banner $banner)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Banner  $banner
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Banner $banner)
+    public function show()
     {
         //
     }
@@ -65,10 +76,9 @@ class BannerController extends BaseCommand
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Banner  $banner
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Banner $banner)
+    public function updateStatus()
     {
         //
     }
