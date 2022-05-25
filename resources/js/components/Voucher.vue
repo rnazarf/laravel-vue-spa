@@ -183,11 +183,11 @@
               </div>
             </div>
             <div>
-              <a href="#" class="fw-bold text-dark"
-                ><span class="fw-normal text-gray">{{
-                  voucher.description
-                }}</span></a
-              >
+              <a href="#" class="fw-bold text-dark">
+                <span class="fw-normal text-gray">
+                  {{ voucher.description }}
+                </span>
+              </a>
             </div>
           </div>
           <div
@@ -635,7 +635,7 @@ export default {
       this.form.reset();
       this.form.errors.clear();
     },
-    changeStatus(id, status) {
+    changeStatus(id) {
       Swal.fire({
         title: "Are you sure?",
         text: "Status voucher ini akan di ubah!",

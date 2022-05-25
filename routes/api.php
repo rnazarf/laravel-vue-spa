@@ -61,6 +61,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'v1'], function () {
     Route::get('/banner', [BannerController::class, 'index']);
     Route::get('/banner/{id}', [BannerController::class, 'show']);
     Route::post('/banner', [BannerController::class, 'store']);
+    Route::put('/banner/{id}', [BannerController::class, 'update']);
     Route::put('/banner/{id}/status', [BannerController::class, 'updateStatus']);
     Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
 });

@@ -10,12 +10,12 @@
       "
     >
       <div class="d-block mb-md-0">
-        <h2 class="h4">All Subcategory</h2>
-        <p class="mb-0">Manage subcategory for product.</p>
+        <h2 class="h4">All Bank</h2>
+        <p class="mb-0">Manage bank for peyment.</p>
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openCreateModal"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -60,7 +60,7 @@
               v-model="searchData"
               type="text"
               class="form-control"
-              placeholder="Search Subcategory"
+              placeholder="Search Bank"
             />
             <button class="btn btn-sm btn-gray-800" @click="search">
               Search
@@ -111,9 +111,8 @@
                     fill-rule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clip-rule="evenodd"
-                  ></path>
-                </svg>
-              </a>
+                  ></path></svg
+              ></a>
               <a class="dropdown-item fw-bold" href="#">20</a>
               <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
             </div>
@@ -122,30 +121,31 @@
       </div>
     </div>
     <div class="card card-body border-0 shadow table-wrapper table-responsive">
-      <table class="table table-hover">
+      <table class="table table-hover align-items-center">
         <thead>
           <tr>
             <th class="border-gray-200">#</th>
             <th class="border-gray-200">Name</th>
-            <th class="border-gray-200">Category</th>
+            <th class="border-gray-200">Account Number</th>
+            <th class="border-gray-200">Description</th>
             <th class="border-gray-200">Action</th>
           </tr>
         </thead>
         <tbody>
           <!-- Item -->
-          <template v-if="subcategory.data && subcategory.meta.total > 0">
-            <tr
-              v-for="(subcategory, index) in subcategory.data"
-              :key="subcategory.id"
-            >
+          <template v-if="bank.data && bank.total > 0">
+            <tr v-for="(bank, index) in bank.data" :key="bank.id">
               <td>
                 {{ (currentPage - 1) * perPage + index + 1 }}
               </td>
               <td>
-                <span class="fw-normal">{{ subcategory.name }}</span>
+                <span class="fw-normal">{{ bank.name }}</span>
               </td>
               <td>
-                <span class="fw-normal">{{ subcategory.category.name }}</span>
+                <span class="fw-normal">{{ bank.account_number }}</span>
+              </td>
+              <td>
+                <span class="fw-normal">{{ bank.description }}</span>
               </td>
               <td>
                 <div class="btn-group">
@@ -173,13 +173,13 @@
                     <a
                       class="dropdown-item"
                       href="#"
-                      @click="editModal(subcategory)"
+                      @click="openEditModal(bank)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
                       class="dropdown-item text-danger rounded-bottom"
                       href="#"
-                      @click="deleteAction(subcategory.id)"
+                      @click="deleteAction(bank.id)"
                       ><span class="fas fa-trash-alt me-2"></span>Remove</a
                     >
                   </div>
@@ -208,7 +208,12 @@
           justify-content-between
         "
       >
-        <pagination :data="subcategory" @pagination-change-page="getData">
+        <div class="fw-normal small mt-4 mt-lg-0">
+          Showing <b>{{ from }}</b> to <b>{{ to }}</b> of
+          <b>{{ total }}</b> entries
+        </div>
+
+        <pagination :data="bank" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
           </template>
@@ -216,142 +221,33 @@
             <span>Next</span>
           </template>
         </pagination>
-        <div class="fw-normal small mt-4 mt-lg-0">
-          Showing <b>{{ from }}</b> to <b>{{ to }}</b> of
-          <b>{{ total }}</b> entries
-        </div>
       </div>
 
-      <!-- Modal Content -->
-      <div
-        class="modal fade"
-        id="formModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modal-default"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="h6 modal-title">Form Subcategory</h2>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form
-              @submit.prevent="editMode ? updateAction() : createAction()"
-              autocomplete="off"
-            >
-              <div class="modal-body">
-                <!-- Form -->
-                <div class="form-group mb-1">
-                  <label for="name">Name</label>
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="Category Name"
-                    id="name"
-                    name="name"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('name') }"
-                  />
-                  <has-error :form="form" field="name"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="category_id">Category</label>
-                  <select
-                    v-model="form.category_id"
-                    name="category_id"
-                    id="category_id"
-                    class="form-select"
-                    :class="{ 'is-invalid': form.errors.has('category_id') }"
-                  >
-                    <option value="">Pilih Category</option>
-                    <option
-                      v-for="category in categoryData.data"
-                      :key="category.id"
-                      :value="category.id"
-                      :selected="category.id == form.category_id"
-                    >
-                      {{ category.name }}
-                    </option>
-                  </select>
-                  <has-error :form="form" field="category_id"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="status">Status</label>
-                  <select
-                    v-model="form.status"
-                    name="status"
-                    id="status"
-                    class="form-select"
-                    :class="{ 'is-invalid': form.errors.has('status') }"
-                  >
-                    <option value="">Pilih</option>
-                    <option value="N">Tidak Aktif</option>
-                    <option value="Y">Aktif</option>
-                  </select>
-                  <has-error :form="form" field="status"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="description">Image</label>
-                  <input
-                    class="form-control"
-                    type="file"
-                    name="image"
-                    @change="handleFile"
-                    :class="{ 'is-invalid': form.errors.has('image') }"
-                  />
-                  <has-error :form="form" field="image"></has-error>
-                </div>
-                <!-- End of Form -->
-              </div>
-              <div class="modal-footer">
-                <button
-                  v-show="editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Update
-                </button>
-                <button
-                  v-show="!editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-link text-gray-600 ms-auto"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <!-- End of Modal Content -->
+      <modal-form
+        v-show="isModalVisible"
+        @close-modal="closeModal"
+        @refresh-data="getData"
+        :dataBank="bankData"
+        :isEdit="isEdit"
+        :isModalVisible="isModalVisible"
+      />
     </div>
   </div>
 </template>
 
 <script>
-const objectToFormData = require("object-to-formdata");
+import formModal from "./Modal";
 
 export default {
+  components: {
+    "modal-form": formModal,
+  },
   data() {
     return {
-      editMode: false,
-      categoryData: {},
-      subcategory: {},
+      isEdit: false,
+      isModalVisible: false,
+      bankData: {},
+      bank: {},
       currentPage: 1,
       from: 0,
       to: 0,
@@ -360,18 +256,27 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        category_id: "",
-        status: "",
-        image: null,
       }),
     };
   },
-  mounted() {},
   methods: {
-    handleFile(event) {
-      const file = event.target.files[0];
-      this.form.image = file;
+    openCreateModal() {
+      this.isEdit = false;
+      this.isModalVisible = true;
+      this.bankData = {};
+    },
+    openEditModal(data) {
+      this.isEdit = true;
+      this.isModalVisible = true;
+      this.bankData = {
+        id: data.id,
+        name: data.name,
+        account_number: data.account_number,
+        description: data.description,
+      };
+    },
+    closeModal() {
+      this.isModalVisible = false;
     },
     search() {
       this.$Progress.start();
@@ -381,105 +286,17 @@ export default {
     getData(page = this.currentPage, reload = false) {
       this.$Progress.start();
       axios
-        .get("api/v1/subcategory", {
+        .get("api/v1/bank", {
           params: {
             page: !reload ? page : 1,
             search: this.searchData,
           },
         })
         .then(({ data }) => {
-          this.subcategory = data;
-          this.pagination(data.meta);
+          this.bank = data.data;
+          this.pagination(data);
         });
       this.$Progress.finish();
-    },
-    loadCategory() {
-      this.$Progress.start();
-      axios.get("api/v1/category").then(({ data }) => {
-        this.categoryData = data.data;
-      });
-      this.$Progress.finish();
-    },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    editModal(subcategory) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      this.form.fill(subcategory);
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .submit("post", "api/v1/subcategory", {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .submit("post", "api/v1/subcategory/" + this.form.id, {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              data["_method"] = "PUT";
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
     },
     deleteAction(id) {
       Swal.fire({
@@ -492,7 +309,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           this.form
-            .delete("api/v1/subcategory/" + id)
+            .delete("api/v1/bank/" + id)
             .then(() => {
               Swal.fire("Deleted!", "Data has been deleted.", "success");
               this.getData();
@@ -504,24 +321,35 @@ export default {
       });
     },
     pagination(meta) {
-      this.currentPage = meta.current_page;
-      this.perPage = meta.per_page;
-      this.from = meta.from ?? 0;
-      this.to = meta.to ?? 0;
-      this.total = meta.total;
-    },
-    clearForm() {
-      this.form.reset();
-      this.form.errors.clear();
+      this.currentPage = meta.data.current_page;
+      this.perPage = meta.data.per_page;
+      this.from = meta.data.from ?? 0;
+      this.to = meta.data.to ?? 0;
+      this.total = meta.data.total;
     },
   },
   created() {
     this.$Progress.start();
     setTimeout(() => {
       this.getData();
-      this.loadCategory();
       this.$Progress.finish();
     }, 1000);
   },
 };
 </script>
+
+<style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  display: block;
+  /* overflow: hidden; */
+  outline: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: opacity 0.15s linear;
+}
+</style>

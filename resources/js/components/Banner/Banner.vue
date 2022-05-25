@@ -15,7 +15,7 @@
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openModalForm"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -139,17 +139,18 @@
                 <p class="text-mute mb-2">
                   {{ banner.description }}
                 </p>
-                <a
+                <!-- <a
                   class="
                     btn btn-sm btn-secondary
                     d-inline-flex
                     align-items-center
                     me-2
                   "
-                  href="#"
+                  @click="openModalFormEdit"
+                  href="javascript:void(0)"
                 >
                   Edit
-                </a>
+                </a> -->
                 <a
                   class="
                     btn btn-sm btn-gray-800
@@ -157,32 +158,35 @@
                     align-items-center
                     me-2
                   "
-                  href="#"
+                  @click="deleteAction(banner.id)"
+                  href="javascript:void(0)"
                 >
                   Delete
                 </a>
                 <template v-if="banner.status == 'Y'">
                   <a
+                    @click="changeStatus(banner.id)"
                     class="
                       btn btn-sm btn-danger
                       d-inline-flex
                       align-items-center
                       me-2
                     "
-                    href="#"
+                    href="javascript:void(0)"
                   >
                     Set Nonactive
                   </a>
                 </template>
                 <template v-else>
                   <a
+                    @click="changeStatus(banner.id)"
                     class="
                       btn btn-sm btn-success
                       d-inline-flex
                       align-items-center
                       me-2
                     "
-                    href="#"
+                    href="javascript:void(0)"
                   >
                     Set Active
                   </a>
@@ -231,98 +235,14 @@
         :dataBanner="bannerData"
       />
 
-      <div
-        class="modal fade"
-        id="formModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modal-default"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="h6 modal-title">Form Banner</h2>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form
-              @submit.prevent="createAction()"
-              autocomplete="off"
-              enctype="multipart/form-data"
-            >
-              <div class="modal-body">
-                <div class="form-group mb-1">
-                  <label for="title">Title</label>
-                  <input
-                    v-model="form.title"
-                    type="text"
-                    class="form-control"
-                    placeholder="Banner Title"
-                    id="title"
-                    name="title"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('title') }"
-                  />
-                  <has-error :form="form" field="title"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="description">Description</label>
-                  <textarea
-                    v-model="form.description"
-                    class="form-control"
-                    placeholder="Lorem ipsum dolor sit amet"
-                    id="description"
-                    name="description"
-                    :class="{ 'is-invalid': form.errors.has('description') }"
-                  >
-                  </textarea>
-                  <has-error :form="form" field="description"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="description">Image</label>
-                  <input
-                    class="form-control"
-                    type="file"
-                    name="image"
-                    @change="handleFile"
-                    :class="{ 'is-invalid': form.errors.has('image') }"
-                  />
-                  <has-error :form="form" field="image"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="status">Status</label>
-                  <select
-                    v-model="form.status"
-                    name="status"
-                    id="status"
-                    class="form-select"
-                    :class="{ 'is-invalid': form.errors.has('status') }"
-                  >
-                    <option value="N">Tidak Aktif</option>
-                    <option value="Y">Aktif</option>
-                  </select>
-                  <has-error :form="form" field="status"></has-error>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-secondary">Create</button>
-                <button
-                  type="button"
-                  class="btn btn-link text-gray-600 ms-auto"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <modal-form
+        v-show="isModalFormVisible"
+        @close-modal="closeModalForm"
+        @refresh-data="getData"
+        :dataBanner="bannerData"
+        :isEdit="isEdit"
+      />
+
       <!-- End of Modal Content -->
     </div>
   </div>
@@ -330,17 +250,19 @@
 
 <script>
 import ImageModal from "./ImageModal";
-
-const objectToFormData = require("object-to-formdata");
+import FormModal from "./Modal";
 
 export default {
   components: {
     "modal-image": ImageModal,
+    "modal-form": FormModal,
   },
   data() {
     return {
       bannerData: {},
       isModalVisible: false,
+      isModalFormVisible: false,
+      isEdit: false,
       banners: {},
       currentPage: 1,
       from: 0,
@@ -350,10 +272,6 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        title: "",
-        image: null,
-        description: "",
-        status: "",
       }),
     };
   },
@@ -361,16 +279,24 @@ export default {
     console.log("Component mounted.");
   },
   methods: {
+    openModalForm() {
+      this.isModalFormVisible = true;
+    },
+    openModalFormEdit(banner) {
+      this.isModalFormVisible = true;
+      this.isEdit = true;
+      this.bannerData = banner;
+    },
+    closeModalForm() {
+      this.isModalFormVisible = false;
+    },
     openModal(banner) {
+      this.isEdit = false;
       this.bannerData = banner;
       this.isModalVisible = true;
     },
     closeModal() {
       this.isModalVisible = false;
-    },
-    handleFile(event) {
-      const file = event.target.files[0];
-      this.form.image = file;
     },
     search() {
       this.$Progress.start();
@@ -393,79 +319,27 @@ export default {
         });
       this.$Progress.finish();
     },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .submit("post", "api/v1/banner", {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .submit("post", "api/v1/banner/" + this.form.id, {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              data["_method"] = "PUT";
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
+    changeStatus(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Status banner ini akan di ubah!",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes!",
+      }).then((result) => {
+        if (result.value) {
+          this.form
+            .put("api/v1/banner/" + id + "/status")
+            .then(() => {
+              Swal.fire("Changed!", "Data has been change.", "success");
+              this.getData();
+            })
+            .catch((data) => {
+              Swal.fire("Failed!", data.message, "warning");
+            });
+        }
+      });
     },
     deleteAction(id) {
       Swal.fire({
@@ -495,10 +369,6 @@ export default {
       this.from = meta.from ?? 0;
       this.to = meta.to ?? 0;
       this.total = meta.total;
-    },
-    clearForm() {
-      this.form.reset();
-      this.form.errors.clear();
     },
   },
   created() {

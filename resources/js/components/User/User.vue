@@ -15,7 +15,7 @@
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openCreateModal"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -202,7 +202,10 @@
                     <a class="dropdown-item rounded-top" href="#"
                       ><span class="fas fa-eye me-2"></span>View Details</a
                     >
-                    <a class="dropdown-item" href="#" @click="editModal(user)"
+                    <a
+                      class="dropdown-item"
+                      href="#"
+                      @click="openEditModal(user)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
@@ -251,134 +254,30 @@
         </pagination>
       </div>
 
-      <!-- Modal Content -->
-      <div
-        class="modal fade"
-        id="formModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modal-default"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="h6 modal-title">Form User</h2>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form @submit.prevent="editMode ? updateAction() : createAction()">
-              <div class="modal-body">
-                <!-- Form -->
-                <div class="form-group mb-1">
-                  <label for="name">Name</label>
-
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="John Doe"
-                    id="name"
-                    name="name"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('name') }"
-                  />
-                  <has-error :form="form" field="name"></has-error>
-                </div>
-                <!-- End of Form -->
-                <!-- Form -->
-                <div class="form-group mb-1">
-                  <label for="email">Email</label>
-                  <input
-                    v-model="form.email"
-                    type="email"
-                    class="form-control"
-                    placeholder="example@company.com"
-                    id="email"
-                    name="email"
-                    :class="{ 'is-invalid': form.errors.has('email') }"
-                  />
-                  <has-error :form="form" field="email"></has-error>
-                </div>
-                <!-- End of Form -->
-                <div class="form-group">
-                  <!-- Form -->
-                  <div class="form-group mb-1">
-                    <label for="password">Password</label>
-                    <input
-                      v-model="form.password"
-                      type="password"
-                      placeholder="Password"
-                      class="form-control"
-                      id="password"
-                      name="password"
-                      :class="{ 'is-invalid': form.errors.has('password') }"
-                    />
-                    <has-error :form="form" field="password"></has-error>
-                  </div>
-                  <!-- End of Form -->
-                  <!-- Form -->
-                  <div class="form-group mb-1">
-                    <label for="confirm_password">Confirm Password</label>
-                    <div class="input-group">
-                      <input
-                        v-model="form.password_confirmation"
-                        type="password"
-                        placeholder="Confirm Password"
-                        class="form-control"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                      />
-                      <has-error
-                        :form="form"
-                        field="password_confirmation"
-                      ></has-error>
-                    </div>
-                  </div>
-                  <!-- End of Form -->
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  v-show="editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Update
-                </button>
-                <button
-                  v-show="!editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-link text-gray-600 ms-auto"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <!-- End of Modal Content -->
+      <modal-form
+        v-show="isModalVisible"
+        @close-modal="closeModal"
+        @refresh-data="getData"
+        :dataUser="userData"
+        :isEdit="isEdit"
+        :isModalVisible="isModalVisible"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import formModal from "./Modal";
+
 export default {
+  components: {
+    "modal-form": formModal,
+  },
   data() {
     return {
-      editMode: false,
+      isEdit: false,
+      isModalVisible: false,
+      userData: {},
       users: {},
       currentPage: 1,
       from: 0,
@@ -388,15 +287,28 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
       }),
     };
   },
   mounted() {},
   methods: {
+    openCreateModal() {
+      this.isEdit = false;
+      this.isModalVisible = true;
+      this.bankData = {};
+    },
+    openEditModal(user) {
+      this.isEdit = true;
+      this.isModalVisible = true;
+      this.bankData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      };
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     search() {
       this.$Progress.start();
       this.getData(1);
@@ -416,62 +328,6 @@ export default {
           this.pagination(data.meta);
         });
       this.$Progress.finish();
-    },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    editModal(user) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      this.form.fill(user);
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .post("api/v1/user")
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .put("api/v1/user/" + this.form.id)
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
     },
     deleteAction(id) {
       Swal.fire({

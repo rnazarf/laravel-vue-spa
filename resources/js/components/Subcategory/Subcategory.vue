@@ -10,12 +10,12 @@
       "
     >
       <div class="d-block mb-md-0">
-        <h2 class="h4">All Bank</h2>
-        <p class="mb-0">Manage bank for peyment.</p>
+        <h2 class="h4">All Subcategory</h2>
+        <p class="mb-0">Manage subcategory for product.</p>
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openCreateModal"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -60,7 +60,7 @@
               v-model="searchData"
               type="text"
               class="form-control"
-              placeholder="Search Bank"
+              placeholder="Search Subcategory"
             />
             <button class="btn btn-sm btn-gray-800" @click="search">
               Search
@@ -111,8 +111,9 @@
                     fill-rule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clip-rule="evenodd"
-                  ></path></svg
-              ></a>
+                  ></path>
+                </svg>
+              </a>
               <a class="dropdown-item fw-bold" href="#">20</a>
               <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
             </div>
@@ -121,31 +122,30 @@
       </div>
     </div>
     <div class="card card-body border-0 shadow table-wrapper table-responsive">
-      <table class="table table-hover align-items-center">
+      <table class="table table-hover">
         <thead>
           <tr>
             <th class="border-gray-200">#</th>
             <th class="border-gray-200">Name</th>
-            <th class="border-gray-200">Account Number</th>
-            <th class="border-gray-200">Description</th>
+            <th class="border-gray-200">Category</th>
             <th class="border-gray-200">Action</th>
           </tr>
         </thead>
         <tbody>
           <!-- Item -->
-          <template v-if="bank.data && bank.total > 0">
-            <tr v-for="(bank, index) in bank.data" :key="bank.id">
+          <template v-if="subcategory.data && subcategory.meta.total > 0">
+            <tr
+              v-for="(subcategory, index) in subcategory.data"
+              :key="subcategory.id"
+            >
               <td>
                 {{ (currentPage - 1) * perPage + index + 1 }}
               </td>
               <td>
-                <span class="fw-normal">{{ bank.name }}</span>
+                <span class="fw-normal">{{ subcategory.name }}</span>
               </td>
               <td>
-                <span class="fw-normal">{{ bank.account_number }}</span>
-              </td>
-              <td>
-                <span class="fw-normal">{{ bank.description }}</span>
+                <span class="fw-normal">{{ subcategory.category.name }}</span>
               </td>
               <td>
                 <div class="btn-group">
@@ -170,14 +170,19 @@
                     <a class="dropdown-item rounded-top" href="#"
                       ><span class="fas fa-eye me-2"></span>View Details</a
                     >
-                    <a class="dropdown-item" href="#" @click="editModal(bank)"
-                      ><span class="fas fa-edit me-2"></span>Edit</a
+                    <a
+                      class="dropdown-item"
+                      href="#"
+                      @click="openEditModal(subcategory)"
+                    >
+                      <span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
                       class="dropdown-item text-danger rounded-bottom"
                       href="#"
-                      @click="deleteAction(bank.id)"
-                      ><span class="fas fa-trash-alt me-2"></span>Remove</a
+                      @click="deleteAction(subcategory.id)"
+                    >
+                      <span class="fas fa-trash-alt me-2"></span>Remove</a
                     >
                   </div>
                 </div>
@@ -205,7 +210,7 @@
           justify-content-between
         "
       >
-        <pagination :data="bank" @pagination-change-page="getData">
+        <pagination :data="subcategory" @pagination-change-page="getData">
           <template #prev-nav>
             <span>Previous</span>
           </template>
@@ -219,125 +224,30 @@
         </div>
       </div>
 
-      <!-- Modal Content -->
-      <div
-        class="modal fade"
-        id="formModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modal-default"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="h6 modal-title">Form Bank</h2>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form
-              @submit.prevent="editMode ? updateAction() : createAction()"
-              autocomplete="off"
-              enctype="multipart/form-data"
-            >
-              <div class="modal-body">
-                <div class="form-group mb-1">
-                  <label for="name">Name</label>
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="Bank Name"
-                    id="name"
-                    name="name"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('name') }"
-                  />
-                  <has-error :form="form" field="name"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="account_number">Account Number</label>
-                  <input
-                    v-model="form.account_number"
-                    type="number"
-                    class="form-control"
-                    placeholder="Account Number"
-                    id="account_number"
-                    name="account_number"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('account_number') }"
-                  />
-                  <has-error :form="form" field="account_number"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="description">Description</label>
-                  <textarea
-                    v-model="form.description"
-                    class="form-control"
-                    placeholder="Lorem ipsum dolor sit amet"
-                    id="description"
-                    name="description"
-                    :class="{ 'is-invalid': form.errors.has('description') }"
-                  >
-                  </textarea>
-                  <has-error :form="form" field="description"></has-error>
-                </div>
-                <div class="form-group mb-1">
-                  <label for="description">Logo</label>
-                  <input
-                    class="form-control"
-                    type="file"
-                    name="logo"
-                    @change="handleFile"
-                    :class="{ 'is-invalid': form.errors.has('logo') }"
-                  />
-                  <has-error :form="form" field="logo"></has-error>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  v-show="editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Update
-                </button>
-                <button
-                  v-show="!editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-link text-gray-600 ms-auto"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <!-- End of Modal Content -->
+      <modal-form
+        v-show="isModalVisible"
+        @close-modal="closeModal"
+        @refresh-data="getData"
+        :dataSubcategory="subcategoryData"
+        :isEdit="isEdit"
+      />
     </div>
   </div>
 </template>
 
 <script>
-const objectToFormData = require("object-to-formdata");
+import formModal from "./Modal";
 
 export default {
+  components: {
+    "modal-form": formModal,
+  },
   data() {
     return {
-      editMode: false,
-      bank: {},
+      isEdit: false,
+      isModalVisible: false,
+      subcategoryData: {},
+      subcategory: {},
       currentPage: 1,
       from: 0,
       to: 0,
@@ -346,20 +256,22 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        account_number: "",
-        description: "",
-        logo: null,
       }),
     };
   },
-  mounted() {
-    console.log("Component mounted.");
-  },
   methods: {
-    handleFile(event) {
-      const file = event.target.files[0];
-      this.form.logo = file;
+    openCreateModal() {
+      this.isEdit = false;
+      this.isModalVisible = true;
+      this.subcategoryData = {};
+    },
+    openEditModal(subcategory) {
+      this.isEdit = true;
+      this.isModalVisible = true;
+      this.subcategoryData = subcategory;
+    },
+    closeModal() {
+      this.isModalVisible = false;
     },
     search() {
       this.$Progress.start();
@@ -369,99 +281,17 @@ export default {
     getData(page = this.currentPage, reload = false) {
       this.$Progress.start();
       axios
-        .get("api/v1/bank", {
+        .get("api/v1/subcategory", {
           params: {
             page: !reload ? page : 1,
             search: this.searchData,
           },
         })
         .then(({ data }) => {
-          this.bank = data.data;
-          this.pagination(data);
+          this.subcategory = data;
+          this.pagination(data.meta);
         });
       this.$Progress.finish();
-    },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    editModal(bank) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      bank.logo = null;
-      this.form.fill(bank);
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .submit("post", "api/v1/bank", {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .submit("post", "api/v1/bank/" + this.form.id, {
-          // Transform form data to FormData
-          transformRequest: [
-            function (data, headers) {
-              data["_method"] = "PUT";
-              return objectToFormData(data);
-            },
-          ],
-
-          onUploadProgress: (e) => {
-            // Do whatever you want with the progress event
-            // console.log(e)
-          },
-        })
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
     },
     deleteAction(id) {
       Swal.fire({
@@ -474,7 +304,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           this.form
-            .delete("api/v1/bank/" + id)
+            .delete("api/v1/subcategory/" + id)
             .then(() => {
               Swal.fire("Deleted!", "Data has been deleted.", "success");
               this.getData();
@@ -486,15 +316,11 @@ export default {
       });
     },
     pagination(meta) {
-      this.currentPage = meta.data.current_page;
-      this.perPage = meta.data.per_page;
-      this.from = meta.data.from ?? 0;
-      this.to = meta.data.to ?? 0;
-      this.total = meta.data.total;
-    },
-    clearForm() {
-      this.form.reset();
-      this.form.errors.clear();
+      this.currentPage = meta.current_page;
+      this.perPage = meta.per_page;
+      this.from = meta.from ?? 0;
+      this.to = meta.to ?? 0;
+      this.total = meta.total;
     },
   },
   created() {

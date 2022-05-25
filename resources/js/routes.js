@@ -15,21 +15,21 @@ export default [
   },
   {
     path: '/category',
-    component: require('./components/Category.vue').default,
+    component: require('./components/Category/Category.vue').default,
     meta: {
       breadcrumb: 'Category'
     }
   },
   {
     path: '/user',
-    component: require('./components/User.vue').default,
+    component: require('./components/User/User.vue').default,
     meta: {
       breadcrumb: 'User'
     }
   },
   {
     path: '/bank',
-    component: require('./components/Bank.vue').default,
+    component: require('./components/Bank/Bank.vue').default,
     meta: {
       breadcrumb: 'Bank'
     }
@@ -57,7 +57,7 @@ export default [
   },
   {
     path: '/subcategory',
-    component: require('./components/Subcategory.vue').default,
+    component: require('./components/Subcategory/Subcategory.vue').default,
     meta: {
       breadcrumb: 'Sub Category'
     }

@@ -78,9 +78,14 @@ class BannerController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateStatus()
+    public function updateStatus($id)
     {
-        //
+        $banner = $this->banner::findOrFail($id);
+
+        $banner->status = $banner->status == 'Y' ? 'N' : 'Y';
+        $banner->save();
+
+        return $this->sendResponse($banner, 'Banner status updated successfully.');
     }
 
     /**
@@ -89,8 +94,12 @@ class BannerController extends BaseController
      * @param  \App\Models\Banner  $banner
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Banner $banner)
+    public function destroy($id)
     {
-        //
+        $banner = $this->banner->findOrFail($id);
+        if ($banner->delete()) {
+            UploadService::deleteFile($banner->image);
+        }
+        return $this->sendResponse([$banner], 'Banner deleted successfully.');
     }
 }
