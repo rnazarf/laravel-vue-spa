@@ -25,7 +25,7 @@ class SubcategoryController extends BaseController
             $subcategory = $subcategory::where('name', 'like', '%' . $request->search . '%');
         }
 
-        return new SubcategoryCollection($subcategory->paginate(10));
+        return new SubcategoryCollection($subcategory->with('categories')->paginate(10));
     }
 
     public function store(SubcategoryRequest $request)

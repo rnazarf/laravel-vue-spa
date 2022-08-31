@@ -52,7 +52,7 @@ class VoucherController extends BaseController
             'description' => $request['description'],
             'voucher_code' => $request['voucher_code'],
             'status' => $request['status'],
-            'type' => $request['type'],
+            'type_voucher' => $request['type_voucher'],
             'value' => $request['value'],
         ]);
 

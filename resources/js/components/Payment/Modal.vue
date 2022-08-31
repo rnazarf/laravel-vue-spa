@@ -1,4 +1,5 @@
 <template>
+  <!-- Modal Content -->
   <div
     class="modal"
     id="formModal"
@@ -7,12 +8,10 @@
     aria-labelledby="modal-default"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="h6 modal-title">
-            Form Category : {{ dataCategory.name }}
-          </h2>
+          <h2 class="h6 modal-title">Form Payment</h2>
           <button
             type="button"
             class="btn-close"
@@ -29,10 +28,10 @@
             <div class="form-group mb-1">
               <label for="name">Name</label>
               <input
-                v-model="dataCategory.name"
+                v-model="dataPayment.name"
                 type="text"
                 class="form-control"
-                placeholder="Category Name"
+                placeholder="Payment Name"
                 id="name"
                 name="name"
                 autofocus
@@ -45,7 +44,7 @@
             <div class="form-group mb-1">
               <label for="description">Description</label>
               <textarea
-                v-model="dataCategory.description"
+                v-model="dataPayment.description"
                 type="description"
                 class="form-control"
                 placeholder="Lorem ipsum dolor sit amet"
@@ -58,7 +57,11 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-secondary">
+            <button
+              :disabled="disabled"
+              type="submit"
+              class="btn btn-secondary"
+            >
               {{ isEdit ? "Update" : "Create" }}
             </button>
             <button
@@ -73,6 +76,7 @@
       </div>
     </div>
   </div>
+  <!-- End of Modal Content -->
 </template>
 
 <script>
@@ -83,7 +87,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    dataCategory: {
+    dataPayment: {
       id: {
         type: Number,
         default: 0,
@@ -100,6 +104,7 @@ export default {
   },
   data() {
     return {
+      disabled: false,
       form: new Form({
         id: "",
         name: "",
@@ -113,16 +118,16 @@ export default {
       this.form.errors.clear();
     },
     closeModal() {
-      this.clearForm();
       this.$emit("close-modal");
     },
     createAction() {
+      this.disabled = true;
       this.$Progress.start();
       this.clearForm();
-      this.form.fill(this.dataCategory);
+      this.form.fill(this.dataPayment);
 
       this.form
-        .post("api/v1/category")
+        .post("api/v1/payment")
         .then((response) => {
           Toast.fire({
             icon: "success",
@@ -137,17 +142,24 @@ export default {
             icon: "error",
             title: "Some error occured! Please try again",
           });
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.$Progress.finish();
         });
       this.$Progress.finish();
     },
     updateAction() {
+      this.disabled = true;
       this.$Progress.start();
       this.clearForm();
-      this.form.fill(this.dataCategory);
+      this.form.fill(this.dataPayment);
 
       this.form
-        .put("api/v1/category/" + this.form.id)
+        .put("api/v1/payment/" + this.form.id)
         .then((response) => {
+          // success
+
           Toast.fire({
             icon: "success",
             title: response.data.message,
@@ -161,6 +173,10 @@ export default {
             icon: "error",
             title: "Some error occured! Please try again",
           });
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.$Progress.finish();
         });
     },
   },

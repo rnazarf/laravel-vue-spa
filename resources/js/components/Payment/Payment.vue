@@ -15,7 +15,7 @@
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openCreateModal"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -169,7 +169,7 @@
                     <a
                       class="dropdown-item"
                       href="#"
-                      @click="editModal(payment)"
+                      @click="openEditModal(payment)"
                       ><span class="fas fa-edit me-2"></span>Edit</a
                     >
                     <a
@@ -218,100 +218,29 @@
         </div>
       </div>
 
-      <!-- Modal Content -->
-      <div
-        class="modal fade"
-        id="formModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modal-default"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="h6 modal-title">Form Payment</h2>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form
-              @submit.prevent="editMode ? updateAction() : createAction()"
-              autocomplete="off"
-            >
-              <div class="modal-body">
-                <!-- Form -->
-                <div class="form-group mb-1">
-                  <label for="name">Name</label>
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="Payment Name"
-                    id="name"
-                    name="name"
-                    autofocus
-                    :class="{ 'is-invalid': form.errors.has('name') }"
-                  />
-                  <has-error :form="form" field="name"></has-error>
-                </div>
-                <!-- End of Form -->
-                <!-- Form -->
-                <div class="form-group mb-1">
-                  <label for="description">Description</label>
-                  <textarea
-                    v-model="form.description"
-                    type="description"
-                    class="form-control"
-                    placeholder="Lorem ipsum dolor sit amet"
-                    id="description"
-                    name="description"
-                    :class="{ 'is-invalid': form.errors.has('description') }"
-                  >
-                  </textarea>
-                  <has-error :form="form" field="description"></has-error>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  v-show="editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Update
-                </button>
-                <button
-                  v-show="!editMode"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-link text-gray-600 ms-auto"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <!-- End of Modal Content -->
+      <modal-form
+        v-show="isModalVisible"
+        @close-modal="closeModal"
+        @refresh-data="getData"
+        :dataPayment="PaymentData"
+        :isEdit="isEdit"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import formModal from "./Modal";
+
 export default {
+  components: {
+    "modal-form": formModal,
+  },
   data() {
     return {
-      editMode: false,
+      isEdit: false,
+      isModalVisible: false,
+      PaymentData: {},
       payment: {},
       currentPage: 1,
       from: 0,
@@ -321,8 +250,6 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        description: "",
       }),
     };
   },
@@ -330,6 +257,19 @@ export default {
     console.log("mounted");
   },
   methods: {
+    openCreateModal() {
+      this.isEdit = false;
+      this.isModalVisible = true;
+      this.PaymentData = {};
+    },
+    openEditModal(payment) {
+      this.isEdit = true;
+      this.isModalVisible = true;
+      this.PaymentData = payment;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     search() {
       this.$Progress.start();
       this.getData(1);
@@ -349,62 +289,6 @@ export default {
           this.pagination(data);
         });
       this.$Progress.finish();
-    },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    editModal(payment) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      this.form.fill(payment);
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .post("api/v1/payment")
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .put("api/v1/payment/" + this.form.id)
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
     },
     deleteAction(id) {
       Swal.fire({

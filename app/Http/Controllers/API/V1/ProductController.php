@@ -2,19 +2,31 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Http\Resources\ProductCollection;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends BaseController
 {
+
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $products = $this->product;
+
+        if ($request->search) {
+            $products = $products::where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        return new ProductCollection($products->with(['subcategories', 'subcategories.categories'])->paginate(4));
     }
 
     /**

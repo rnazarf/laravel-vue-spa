@@ -295,12 +295,12 @@ export default {
     openCreateModal() {
       this.isEdit = false;
       this.isModalVisible = true;
-      this.bankData = {};
+      this.userData = {};
     },
     openEditModal(user) {
       this.isEdit = true;
       this.isModalVisible = true;
-      this.bankData = {
+      this.userData = {
         id: user.id,
         name: user.name,
         email: user.email,

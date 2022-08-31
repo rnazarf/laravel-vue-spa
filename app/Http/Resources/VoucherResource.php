@@ -20,7 +20,7 @@ class VoucherResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'status' => $this->status,
-            'type' => $this->type,
+            'type_voucher' => $this->type_voucher,
             'value' => $this->value,
         ];
     }

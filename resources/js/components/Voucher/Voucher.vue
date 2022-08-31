@@ -15,7 +15,7 @@
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button
-          @click="newModal"
+          @click="openCreateModal"
           class="btn btn-sm btn-gray-800 d-inline-flex align-items-center"
         >
           <svg
@@ -164,9 +164,9 @@
                         clip-rule="evenodd"
                       ></path>
                     </svg>
-                    {{ voucher.type == "Money" ? "Rp. " : "" }}
+                    {{ voucher.type_voucher == "Money" ? "Rp. " : "" }}
                     {{ Number(voucher.value).toLocaleString() }}
-                    {{ voucher.type == "Percent" ? "%" : "" }}
+                    {{ voucher.type_voucher == "Percent" ? "%" : "" }}
                   </h4>
                 </div>
                 <div class="ms-sm-3">
@@ -238,7 +238,7 @@
                 <a
                   class="dropdown-item d-flex align-items-center"
                   href="#"
-                  @click="editModal(voucher)"
+                  @click="openEditModal(voucher)"
                 >
                   <svg
                     class="dropdown-icon text-black-400 me-2"
@@ -339,171 +339,29 @@
     </div>
 
     <!-- Modal Content -->
-    <div
-      class="modal fade"
-      id="formModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="modal-default"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="h6 modal-title">Form Voucher</h2>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <form
-            @submit.prevent="editMode ? updateAction() : createAction()"
-            autocomplete="off"
-          >
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group mb-1">
-                    <label for="name">Name</label>
-                    <input
-                      v-model="form.name"
-                      type="text"
-                      class="form-control"
-                      placeholder="Voucher Name"
-                      id="name"
-                      name="name"
-                      autofocus
-                      :class="{ 'is-invalid': form.errors.has('name') }"
-                    />
-                    <has-error :form="form" field="name"></has-error>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group mb-1">
-                    <label for="description">Description</label>
-                    <textarea
-                      v-model="form.description"
-                      type="description"
-                      class="form-control"
-                      placeholder="Lorem ipsum dolor sit amet"
-                      id="description"
-                      name="description"
-                      :class="{
-                        'is-invalid': form.errors.has('description'),
-                      }"
-                    >
-                    </textarea>
-                    <has-error :form="form" field="description"></has-error>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group mb-1">
-                    <label for="voucher_code">Voucher Code</label>
-                    <input
-                      v-model="form.voucher_code"
-                      type="text"
-                      class="form-control"
-                      placeholder="Voucher Code"
-                      id="voucher_code"
-                      name="voucher_code"
-                      autofocus
-                      :class="{
-                        'is-invalid': form.errors.has('voucher_code'),
-                      }"
-                    />
-                    <has-error :form="form" field="voucher_code"></has-error>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group mb-1">
-                    <label for="status">Status</label>
-                    <select
-                      v-model="form.status"
-                      name="status"
-                      id="status"
-                      class="form-select"
-                      :class="{ 'is-invalid': form.errors.has('status') }"
-                    >
-                      <option value="N">Tidak Aktif</option>
-                      <option value="Y">Aktif</option>
-                    </select>
-                    <has-error :form="form" field="status"></has-error>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group mb-1">
-                    <label for="type">Type</label>
-                    <select
-                      v-model="form.type"
-                      name="type"
-                      id="type"
-                      class="form-select"
-                      :class="{ 'is-invalid': form.errors.has('type') }"
-                    >
-                      <option value="Percent">Percent</option>
-                      <option value="Money">Money</option>
-                    </select>
-                    <has-error :form="form" field="type"></has-error>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group mb-1">
-                    <label for="value">Value</label>
-                    <input
-                      v-model="form.value"
-                      type="number"
-                      class="form-control"
-                      placeholder="Value"
-                      id="value"
-                      name="value"
-                      autofocus
-                      :class="{ 'is-invalid': form.errors.has('value') }"
-                    />
-                    <has-error :form="form" field="value"></has-error>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button v-show="editMode" type="submit" class="btn btn-secondary">
-                Update
-              </button>
-              <button
-                v-show="!editMode"
-                type="submit"
-                class="btn btn-secondary"
-              >
-                Create
-              </button>
-              <button
-                type="button"
-                class="btn btn-link text-gray-600 ms-auto"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <modal-form
+      v-show="isModalVisible"
+      @close-modal="closeModal"
+      @refresh-data="getData"
+      :dataVoucher="voucherData"
+      :isEdit="isEdit"
+    />
     <!-- End of Modal Content -->
   </div>
 </template>
 
 <script>
+import formModal from "./Modal";
+
 export default {
+  components: {
+    "modal-form": formModal,
+  },
   data() {
     return {
-      editMode: false,
+      isEdit: false,
+      isModalVisible: false,
+      voucherData: {},
       voucher: {},
       currentPage: 1,
       from: 0,
@@ -513,12 +371,6 @@ export default {
       searchData: "",
       form: new Form({
         id: "",
-        name: "",
-        description: "",
-        voucher_code: "",
-        status: "N",
-        type: "Percent",
-        value: 0,
       }),
     };
   },
@@ -526,6 +378,21 @@ export default {
     console.log("mounted");
   },
   methods: {
+    openCreateModal() {
+      this.isEdit = false;
+      this.isModalVisible = true;
+      this.voucherData = {};
+      console.log(this.voucherData);
+    },
+    openEditModal(voucher) {
+      this.isEdit = true;
+      this.isModalVisible = true;
+      this.voucherData = voucher;
+      console.log(this.voucherData);
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     search() {
       this.$Progress.start();
       this.getData(1);
@@ -545,62 +412,6 @@ export default {
           this.pagination(data.meta);
         });
       this.$Progress.finish();
-    },
-    newModal() {
-      this.editMode = false;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-    },
-    editModal(voucher) {
-      this.editMode = true;
-      this.clearForm();
-      let modal = $("#formModal");
-      modal.modal("show");
-      this.form.fill(voucher);
-    },
-    createAction() {
-      this.$Progress.start();
-      this.form
-        .post("api/v1/voucher")
-        .then((response) => {
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData(1, true);
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
-      this.$Progress.finish();
-    },
-    updateAction() {
-      this.form
-        .put("api/v1/voucher/" + this.form.id)
-        .then((response) => {
-          // success
-          $("#formModal").modal("hide");
-
-          Toast.fire({
-            icon: "success",
-            title: response.data.message,
-          });
-
-          this.getData();
-        })
-        .catch(() => {
-          Toast.fire({
-            icon: "error",
-            title: "Some error occured! Please try again",
-          });
-        });
     },
     deleteAction(id) {
       Swal.fire({
@@ -630,10 +441,6 @@ export default {
       this.from = meta.from ?? 0;
       this.to = meta.to ?? 0;
       this.total = meta.total;
-    },
-    clearForm() {
-      this.form.reset();
-      this.form.errors.clear();
     },
     changeStatus(id) {
       Swal.fire({

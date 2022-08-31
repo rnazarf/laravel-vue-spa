@@ -258,11 +258,13 @@ export default {
       this.isEdit = false;
       this.isModalVisible = true;
       this.categoryData = {};
+      console.log(this.categoryData);
     },
     openEditModal(category) {
       this.isEdit = true;
       this.isModalVisible = true;
       this.categoryData = category;
+      console.log(this.categoryData);
     },
     closeModal() {
       this.isModalVisible = false;

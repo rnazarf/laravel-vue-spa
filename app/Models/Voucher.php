@@ -16,7 +16,7 @@ class Voucher extends Model
         'name',
         'description',
         'status',
-        'type',
+        'type_voucher',
         'value',
     ];
 }

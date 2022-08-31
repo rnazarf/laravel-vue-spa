@@ -197,6 +197,11 @@ export default {
       this.$Progress.finish();
     },
     updateAction() {
+      this.$Progress.start();
+      this.clearForm();
+      this.form.fill(this.dataSubcategory);
+      console.log(this.form);
+
       this.form
         .submit("post", "api/v1/subcategory/" + this.form.id, {
           // Transform form data to FormData

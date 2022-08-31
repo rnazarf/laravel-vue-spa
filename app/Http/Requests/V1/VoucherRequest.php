@@ -37,7 +37,7 @@ class VoucherRequest extends FormRequest
             'description' => 'nullable|string',
             'voucher_code' => 'required|string|max:20|unique:vouchers,voucher_code',
             'status' => 'required|in:Y,N',
-            'type' => 'required|in:Percent,Money',
+            'type_voucher' => 'required|in:Percent,Money',
             'value' => 'required|numeric',
         ];
     }
@@ -49,7 +49,7 @@ class VoucherRequest extends FormRequest
             'description' => 'nullable|string',
             'voucher_code' => 'required|string|max:20|unique:vouchers,voucher_code,' . $this->id,
             'status' => 'required|in:Y,N',
-            'type' => 'required|in:Percent,Money',
+            'type_voucher' => 'required|in:Percent,Money',
             'value' => 'required|numeric',
         ];
     }

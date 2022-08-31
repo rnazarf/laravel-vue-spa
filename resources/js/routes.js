@@ -36,21 +36,21 @@ export default [
   },
   {
     path: '/payment',
-    component: require('./components/Payment.vue').default,
+    component: require('./components/Payment/Payment.vue').default,
     meta: {
       breadcrumb: 'Payment'
     }
   },
   {
     path: '/voucher',
-    component: require('./components/Voucher.vue').default,
+    component: require('./components/Voucher/Voucher.vue').default,
     meta: {
       breadcrumb: 'Voucher'
     }
   },
   {
     path: '/product',
-    component: require('./components/Product.vue').default,
+    component: require('./components/Product/Product.vue').default,
     meta: {
       breadcrumb: 'Product'
     }
